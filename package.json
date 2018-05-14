@@ -8,7 +8,7 @@
     "clean": "rm -rf dist",
     "launch": "node ./dist/index.js",
     "build": "node ./node_modules/coffeescript/bin/coffee --output dist/ --compile src/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./node_modules/mocha/bin/mocha --require coffeescript/register \"test/**/*.coffee\""
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,8 @@
     "url": "https://github.com/marengohue/master-merchant/issues"
   },
   "devDependencies": {
-    "coffeescript": "^2.3.0"
+    "chai": "^4.1.2",
+    "coffeescript": "^2.3.0",
+    "mocha": "^5.1.1"
   }
 }
