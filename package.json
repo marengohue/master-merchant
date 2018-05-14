@@ -6,8 +6,8 @@
   "scripts": {
     "start": "npm run clean && npm run build && npm run launch",
     "clean": "rm -rf dist",
-    "launch": "node ./dist/game.js",
-    "build": "node ./node_modules/.bin/coffee --output dist/ --compile src/",
+    "launch": "node ./dist/index.js",
+    "build": "node ./node_modules/coffeescript/bin/coffee --output dist/ --compile src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
