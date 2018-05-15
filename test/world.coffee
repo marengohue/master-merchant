@@ -4,6 +4,7 @@ describe 'WorldBuilder', () ->
     World = require '../src/world/world'
     WorldBuilder = require '../src/world/builder'
     bareBuilder = new WorldBuilder
+    defaultCfg = require '../src/cfg/worldgen.json'
 
     it 'Should be an object', ->
         chai.expect(Array.isArray bareBuilder).to.be.false
@@ -15,7 +16,7 @@ describe 'WorldBuilder', () ->
             count = 0
             for x in [0..size.x - 1]
                 for y in [0..size.y - 1]
-                    if (predecate(world.getTile x, y)) then inc count
+                    if (predecate(world.getTile x, y)) then count++
             count
             
         it 'Should be a function', ->
@@ -26,7 +27,7 @@ describe 'WorldBuilder', () ->
 
         it 'Should provide default minimal options', ->
             defaultWorld = bareBuilder.build()
-            chai.expect(defaultWorld.getSize()).to.deep.equal { x: 5, y: 5 }
+            chai.expect(defaultWorld.getSize()).to.deep.equal { x: defaultCfg.sizeX, y: defaultCfg.sizeY }
 
         it 'Should build the world that has certain size', ->
             testBuilder = new WorldBuilder { sizeX: 10, sizeY: 10 }
@@ -36,7 +37,10 @@ describe 'WorldBuilder', () ->
             TownLandsCard = require '../src/cards/lands/town'
             testBuilder = new WorldBuilder { towns: 5 }
             testWorld = testBuilder.build()
-            chai.expect(countTiles(testWorld, (land) -> land instanceof TownLandsCard)).to.equal 5
+            console.log(testWorld);
+            countTowns = (land) ->
+                land instanceof TownLandsCard
+            chai.expect(countTiles(testWorld, countTowns)).to.equal 5
 
 describe 'World', () ->
     LandsCard = require '../src/cards/lands/lands'

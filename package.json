@@ -7,7 +7,9 @@
     "start": "npm run clean && npm run build && npm run launch",
     "clean": "rm -rf dist",
     "launch": "node ./dist/index.js",
-    "build": "node ./node_modules/coffeescript/bin/coffee --output dist/ --compile src/",
+    "build:cfg": "cp -r ./src/cfg ./dist",
+    "build:coffee": "node ./node_modules/coffeescript/bin/coffee --output dist/ --compile src/",
+    "build": "npm run build:coffee npm run cpcfg",
     "test": "node ./node_modules/mocha/bin/mocha --require coffeescript/register \"test/**/*.coffee\""
   },
   "repository": {
@@ -22,6 +24,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "coffeescript": "^2.3.0",
+    "cson": "^5.1.0",
     "mocha": "^5.1.1"
   }
 }
