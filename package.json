@@ -9,7 +9,7 @@
     "launch": "node ./dist/index.js",
     "build:cfg": "cp -r ./src/cfg ./dist",
     "build:coffee": "node ./node_modules/coffeescript/bin/coffee --output dist/ --compile src/",
-    "build": "npm run build:coffee npm run cpcfg",
+    "build": "npm run build:coffee && npm run build:cfg",
     "test": "node ./node_modules/mocha/bin/mocha --require coffeescript/register \"test/**/*.coffee\""
   },
   "repository": {

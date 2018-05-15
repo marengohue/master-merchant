@@ -9,3 +9,9 @@ module.exports = class
 
     getSize: ->
         { x: @tiles.length, y: @tiles[0].length or 0 }
+
+    toString: ->
+        mappedRows = @tiles.map((row) -> row.map((card) -> if card? then card.toString() else '.').join('')).join '\n'
+
+    getTowns: ->
+        []

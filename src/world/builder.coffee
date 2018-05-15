@@ -12,7 +12,7 @@ module.exports = class WorldBuilder
         @options.towns ?= defaultCfg.towns
 
     prepareTilesMatrix: () ->
-        new Array(@options.sizeY) for column in [0..@options.sizeX-1]
+        new Array(@options.sizeY).fill(null) for column in [0..@options.sizeX-1]
 
 
     build: () ->

@@ -1,2 +1,2 @@
 Game = require './game'
-new Game
+game = new Game
