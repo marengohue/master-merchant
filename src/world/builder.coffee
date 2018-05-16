@@ -2,8 +2,10 @@ World = require './world'
 MathUtil = require '../common/math-util'
 TownLandsCard = require '../cards/lands/town'
 LandsCard = require '../cards/lands/lands'
+
 PlainLandsCard = require '../cards/lands/plain'
 ForestLandsCard = require '../cards/lands/forest'
+RiverLandsCard = require '../cards/lands/river'
 
 defaultCfg = require '../cfg/worldgen.json'
 
@@ -14,9 +16,20 @@ module.exports = class WorldBuilder
         @options.sizeY ?= defaultCfg.sizeY
         @options.towns ?= defaultCfg.towns
         @options.availableLands ?= [
-            PlainLandsCard,
-            ForestLandsCard
+            { ctor: PlainLandsCard, weight: 10 }
+            { ctor: ForestLandsCard, weight: 5 }
+            { ctor: RiverLandsCard, weight: 1 }
         ]
+        @applyWeightToLands()
+
+    applyWeightToLands: () ->
+        landsRandomizerCoefficient = @options.availableLands
+            .reduce ((acc, val) => acc + val.weight), 0
+        prevWeight = 0
+        @options.availableLands
+            .forEach (landsRegistryObj) =>
+                prevWeight += landsRegistryObj.weight / landsRandomizerCoefficient
+                landsRegistryObj.weight = prevWeight
 
     prepareTilesMatrix: () ->
         new Array(@options.sizeX).fill(null) for column in [0..@options.sizeY-1]
@@ -56,8 +69,12 @@ module.exports = class WorldBuilder
                 .forEach (town) -> connectedTowns.push town
 
     randomLandsAt: (x, y) ->
-        landsCtor = @options.availableLands[parseInt(Math.random() * @options.availableLands.length)]
-        new landsCtor {x, y}
+        landsRoll = Math.random();
+        for registryObj in @options.availableLands
+            if (registryObj.weight >= landsRoll)
+                return new registryObj.ctor {x, y}
+
+        throw new Error 'Couldnt pick a random lands card'
 
     placeSingleLands: (tiles, connectedTowns, x, y) ->
         existingTile = tiles[y][x]

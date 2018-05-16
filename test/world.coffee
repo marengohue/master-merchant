@@ -5,6 +5,7 @@ World = require '../src/world/world'
 LandsCard = require '../src/cards/lands/lands'
 PlainLandsCard = require '../src/cards/lands/plain'
 ForestLandsCard = require '../src/cards/lands/forest'
+RiverLandsCard = require '../src/cards/lands/river'
 
 TownLandsCard = require '../src/cards/lands/town'
 WorldBuilder = require '../src/world/builder'
@@ -77,8 +78,8 @@ describe 'WorldBuilder', ->
             sizeX = sizeY = 25
             testBuilder = new WorldBuilder
                 availableLands: [
-                    PlainLandsCard,
-                    ForestLandsCard
+                    { ctor: PlainLandsCard, weight: 1 }
+                    { ctor: ForestLandsCard, weight: 1 }
                 ]
                 sizeX
                 sizeY
@@ -86,9 +87,31 @@ describe 'WorldBuilder', ->
 
             testWorld = testBuilder.build()
             chai.expect(countTiles testWorld, (tile) -> (not tile instanceof PlainLandsCard) and (not tile instanceof ForestLandsCard)).to.equal 0
-            
+        
+        it 'Should respect the weights for the tile cards', ->
+            sizeX = sizeY = 100
+            testBuilder = new WorldBuilder
+                availableLands: [
+                    { ctor: PlainLandsCard, weight: 10 }
+                    { ctor: ForestLandsCard, weight: 2 }
+                    { ctor: RiverLandsCard, weight: 1}
+                ]
+                sizeX
+                sizeY
+                towns: 0
+            testWorld = testBuilder.build()
+
+            plainsTilesCount = countTiles testWorld, (tile) -> (tile instanceof PlainLandsCard)
+            forestTilesCount = countTiles testWorld, (tile) -> (tile instanceof ForestLandsCard)
+            riverTilesCount = countTiles testWorld, (tile) -> (tile instanceof RiverLandsCard)
+            totalTiles = plainsTilesCount + forestTilesCount + riverTilesCount
+
+            chai.expect(Math.abs(plainsTilesCount / totalTiles - 10/13)).to.be.below(0.1)
+            chai.expect(Math.abs(forestTilesCount / totalTiles - 2/13)).to.be.below(0.1)
+            chai.expect(Math.abs(riverTilesCount / totalTiles - 1/13)).to.be.below(0.1)
+
         it 'Should kinda look like a world map (not a real test)', ->
-            testBuilder = new WorldBuilder towns: 25
+            testBuilder = new WorldBuilder sizeX: 100, sizeY: 50, towns: 100
             console.log(testBuilder.build().toString())
 
 describe 'World', ->
