@@ -1,6 +1,7 @@
 World = require './world'
 MathUtil = require '../common/math-util'
 TownLandsCard = require '../cards/lands/town'
+LandsCard = require '../cards/lands/lands'
 
 defaultCfg = require '../cfg/worldgen.json'
 
@@ -12,16 +13,16 @@ module.exports = class WorldBuilder
         @options.towns ?= defaultCfg.towns
 
     prepareTilesMatrix: () ->
-        new Array(@options.sizeY).fill(null) for column in [0..@options.sizeX-1]
-
+        new Array(@options.sizeX).fill(null) for column in [0..@options.sizeY-1]
 
     build: () ->
         tiles = @prepareTilesMatrix()
-        @placeTowns tiles
-        new World tiles
+        towns = @placeTowns tiles
+        @connectTowns tiles, towns
+        new World tiles, towns
 
     placeTown: (tiles, town) ->
-        tiles[town.y][town.x] = new TownLandsCard
+        tiles[town.y][town.x] = new TownLandsCard town
 
     placeTowns: (tiles) ->
         regionRejects = 0
@@ -34,8 +35,47 @@ module.exports = class WorldBuilder
                 newTown = MathUtil.randomPoint @options.sizeX, @options.sizeY
                 towns.push(newTown) if towns.every((town) -> MathUtil.manhattanDistance(newTown, town) > 2)
                 if (towns.length is @options.towns)
-                    @placeTown(tiles, town) for town in towns 
-                    return
+                    for town in towns then @placeTown(tiles, town)
+                    return towns
 
             regionRejects++
             if regionRejects is 10 then throw new Error('Couldnt place towns. Try reducing the amount of towns or increase the map size.')
+
+    connectAdjacentTowns: (tiles, connectedTowns, x, y) ->
+        MathUtil.getNeighbours({x, y})
+                .map (p) ->
+                    row = tiles[p.y]
+                    if row then row[p.x] or null else null
+                .filter (tile) -> tile? and tile instanceof TownLandsCard and connectedTowns.indexOf(tile) is -1
+                .forEach (town) -> connectedTowns.push town
+
+    placeSingleLands: (tiles, connectedTowns, x, y) ->
+        existingTile = tiles[y][x]
+        unless existingTile?
+            tiles[y][x] = new LandsCard {x, y}
+            @connectAdjacentTowns tiles, connectedTowns, x, y
+
+    drawLandsLine: (tiles, connectedTowns, p0, p1) ->
+        for y in [p0.y..p1.y]
+            @placeSingleLands tiles, connectedTowns, p0.x, y
+
+        for x in [p0.x..p1.x]
+            @placeSingleLands tiles, connectedTowns, x, p1.y
+
+    connectTwoTowns: (tiles, connectedTowns, t0, t1) ->
+        if Math.random() > 0.5
+            @drawLandsLine tiles, connectedTowns, t0, t1
+        else
+            @drawLandsLine tiles, connectedTowns, t1, t0
+
+    connectTowns: (tiles, townsToConnect) ->
+        townsToConnect = townsToConnect.slice()
+        connectedTowns = [ ]
+        t0 = townsToConnect.pop()
+        t1 = townsToConnect.pop()        
+        @connectTwoTowns tiles, connectedTowns, t0, t1
+        while townsToConnect.length > 0
+            t0 = t1
+            t1 = townsToConnect.pop()
+            if (connectedTowns.find (t) -> MathUtil.equalPoints t1, t.pos)? then continue
+            @connectTwoTowns tiles, connectedTowns, t0, t1

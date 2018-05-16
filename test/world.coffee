@@ -4,10 +4,13 @@ World = require '../src/world/world'
 LandsCard = require '../src/cards/lands/lands'
 TownLandsCard = require '../src/cards/lands/town'
 WorldBuilder = require '../src/world/builder'
-bareBuilder = new WorldBuilder
+MathUtil = require '../src/common/math-util'
+
 defaultCfg = require '../src/cfg/worldgen.json'
 
 describe 'WorldBuilder', () ->
+    bareBuilder = new WorldBuilder
+
     it 'Should be an object', ->
         chai.expect(Array.isArray bareBuilder).to.be.false
         chai.expect(typeof bareBuilder).to.equal 'object'
@@ -21,6 +24,9 @@ describe 'WorldBuilder', () ->
                     if (predecate(world.getTile x, y)) then count++
             count
             
+        alreadyTraversed = (traversed, p) ->
+            traversed.some((p1) -> MathUtil.equalPoints(p, p1))
+
         it 'Should be a function', ->
             chai.expect(typeof bareBuilder.build).to.equal 'function'
 
@@ -42,16 +48,45 @@ describe 'WorldBuilder', () ->
                 land instanceof TownLandsCard
             chai.expect(countTiles(testWorld, countTowns)).to.equal 5
 
-        it 'Should kinda look like a world map (not a real test)', ->
+        it 'Should generate the map with all the towns connected', ->
+            townsRemain = 25
+            testBuilder = new WorldBuilder { towns: townsRemain }
+            world = testBuilder.build()
+            firstTown = world.getTowns()[0]
+            pointsToTraverse = [ firstTown.pos ]
+            traversed = [ ]
+            while pointsToTraverse.length isnt 0
+                nextPoint = pointsToTraverse.pop()
+                traversed.push nextPoint
+                tile = world.getTile nextPoint
+                if (tile instanceof LandsCard)
+                    if (tile instanceof TownLandsCard)
+                        townsRemain -= 1
+
+                    pointsToTraverse = pointsToTraverse.concat(
+                        MathUtil
+                            .getNeighbours(nextPoint)
+                            .filter (p) -> not alreadyTraversed(traversed.concat(pointsToTraverse), p)
+                    )
+
+            chai.expect(townsRemain).to.equal 0
+
+
+        xit 'Should kinda look like a world map (not a real test)', ->
             testBuilder = new WorldBuilder { towns: 25 }
             console.log(testBuilder.build().toString())
 
 describe 'World', () ->
-    world = new World([
-        [ new LandsCard, new LandsCard, new LandsCard ],
-        [ new LandsCard, new LandsCard, new LandsCard ]
-        [ new LandsCard, new LandsCard, new LandsCard ]
-    ])
+    tiles = [
+        [ null,                             null,                        new TownLandsCard(x: 2, y: 0) ]
+        [ new TownLandsCard(x: 0, y: 1),    new LandsCard(x: 1, y: 1),   new LandsCard(x: 2, y: 1) ]
+        [ null,                             null,                        null ]
+    ]
+    towns =  [
+        { x: 0, y: 1 }
+        { x: 2, y: 0 }
+    ]
+    world = new World tiles, towns
     
     it 'Should be an object', ->
         chai.expect(Array.isArray world).to.be.false
@@ -63,6 +98,9 @@ describe 'World', () ->
         
         it 'Should yield a lands when given coords', ->
             chai.expect(world.getTile(1, 1) instanceof LandsCard).to.be.true
+
+        it 'Should world with a single argument as a point obj', ->
+            chai.expect(world.getTile(x: 1, y: 1)).to.equal(world.getTile(1, 1))
 
         it 'Should yield null when out of the bounds', ->
             chai.expect(world.getTile 10, 0).to.be.null
@@ -83,3 +121,7 @@ describe 'World', () ->
             result = world.getTowns()
             chai.expect(Array.isArray result).to.be.true
             chai.expect(result.every (town) -> town instanceof TownLandsCard)
+            chai.expect(result.length).to.equal 2
+
+        it 'Should yield the appropariate town cards', ->
+            chai.expect(world.getTowns()).to.deep.equal(towns.map((p) -> tiles[p.y][p.x]))

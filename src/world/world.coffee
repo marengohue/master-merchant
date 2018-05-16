@@ -1,17 +1,25 @@
 LandsCard = require '../cards/lands/lands'
+Printer = require '../common/printer'
 
 module.exports = class
-    constructor: (@tiles) ->
+    constructor: (@tiles, towns) ->
+        @towns = towns.map (t) => @getTile t
 
-    getTile: (x, y) ->
-        row = @tiles[y]
-        if row then row[x] or null else null
-
+    getTile: (xOrP, y) ->
+        if y?
+            row = @tiles[y]
+            if row then row[xOrP] or null else null
+        else if xOrP.x? and xOrP.y?
+            @getTile xOrP.x, xOrP.y
+        
     getSize: ->
-        { x: @tiles.length, y: @tiles[0].length or 0 }
+        {
+            x: @tiles.length
+            y: @tiles[0].length or 0
+        }
 
     toString: ->
-        mappedRows = @tiles.map((row) -> row.map((card) -> if card? then card.toString() else '.').join('')).join '\n'
+        Printer.printWorldTiles @tiles
 
     getTowns: ->
-        []
+        @towns
