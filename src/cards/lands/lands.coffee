@@ -6,4 +6,4 @@ module.exports = class LandsCard extends Card
         
 
     toString: () ->
-        '.'
+        'x'

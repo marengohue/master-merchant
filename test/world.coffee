@@ -1,7 +1,11 @@
 chai = require 'chai'
 
 World = require '../src/world/world'
+
 LandsCard = require '../src/cards/lands/lands'
+PlainLandsCard = require '../src/cards/lands/plain'
+ForestLandsCard = require '../src/cards/lands/forest'
+
 TownLandsCard = require '../src/cards/lands/town'
 WorldBuilder = require '../src/world/builder'
 MathUtil = require '../src/common/math-util'
@@ -69,8 +73,22 @@ describe 'WorldBuilder', ->
 
             chai.expect(townsRemain).to.equal 0
 
-        xit 'Should kinda look like a world map (not a real test)', ->
-            testBuilder = new WorldBuilder { towns: 25 }
+        it 'Should use only the given lands constructors when building world', ->
+            sizeX = sizeY = 25
+            testBuilder = new WorldBuilder
+                availableLands: [
+                    PlainLandsCard,
+                    ForestLandsCard
+                ]
+                sizeX
+                sizeY
+                towns: 0
+
+            testWorld = testBuilder.build()
+            chai.expect(countTiles testWorld, (tile) -> (not tile instanceof PlainLandsCard) and (not tile instanceof ForestLandsCard)).to.equal 0
+            
+        it 'Should kinda look like a world map (not a real test)', ->
+            testBuilder = new WorldBuilder towns: 25
             console.log(testBuilder.build().toString())
 
 describe 'World', ->

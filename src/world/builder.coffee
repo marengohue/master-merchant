@@ -2,6 +2,8 @@ World = require './world'
 MathUtil = require '../common/math-util'
 TownLandsCard = require '../cards/lands/town'
 LandsCard = require '../cards/lands/lands'
+PlainLandsCard = require '../cards/lands/plain'
+ForestLandsCard = require '../cards/lands/forest'
 
 defaultCfg = require '../cfg/worldgen.json'
 
@@ -11,6 +13,10 @@ module.exports = class WorldBuilder
         @options.sizeX ?= defaultCfg.sizeX
         @options.sizeY ?= defaultCfg.sizeY
         @options.towns ?= defaultCfg.towns
+        @options.availableLands ?= [
+            PlainLandsCard,
+            ForestLandsCard
+        ]
 
     prepareTilesMatrix: () ->
         new Array(@options.sizeX).fill(null) for column in [0..@options.sizeY-1]
@@ -49,10 +55,14 @@ module.exports = class WorldBuilder
                 .filter (tile) -> tile? and tile instanceof TownLandsCard and connectedTowns.indexOf(tile) is -1
                 .forEach (town) -> connectedTowns.push town
 
+    randomLandsAt: (x, y) ->
+        landsCtor = @options.availableLands[parseInt(Math.random() * @options.availableLands.length)]
+        new landsCtor {x, y}
+
     placeSingleLands: (tiles, connectedTowns, x, y) ->
         existingTile = tiles[y][x]
         unless existingTile?
-            tiles[y][x] = new LandsCard {x, y}
+            tiles[y][x] = @randomLandsAt x, y
             @connectAdjacentTowns tiles, connectedTowns, x, y
 
     drawLandsLine: (tiles, connectedTowns, p0, p1) ->
