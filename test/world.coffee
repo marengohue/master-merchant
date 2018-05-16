@@ -60,9 +60,7 @@ describe 'WorldBuilder', () ->
                 traversed.push nextPoint
                 tile = world.getTile nextPoint
                 if (tile instanceof LandsCard)
-                    if (tile instanceof TownLandsCard)
-                        townsRemain -= 1
-
+                    if tile instanceof TownLandsCard then townsRemain -= 1
                     pointsToTraverse = pointsToTraverse.concat(
                         MathUtil
                             .getNeighbours(nextPoint)
@@ -71,8 +69,7 @@ describe 'WorldBuilder', () ->
 
             chai.expect(townsRemain).to.equal 0
 
-
-        xit 'Should kinda look like a world map (not a real test)', ->
+        it 'Should kinda look like a world map (not a real test)', ->
             testBuilder = new WorldBuilder { towns: 25 }
             console.log(testBuilder.build().toString())
 
