@@ -8,7 +8,7 @@ MathUtil = require '../src/common/math-util'
 
 defaultCfg = require '../src/cfg/worldgen.json'
 
-describe 'WorldBuilder', () ->
+describe 'WorldBuilder', ->
     bareBuilder = new WorldBuilder
 
     it 'Should be an object', ->
@@ -69,11 +69,11 @@ describe 'WorldBuilder', () ->
 
             chai.expect(townsRemain).to.equal 0
 
-        it 'Should kinda look like a world map (not a real test)', ->
+        xit 'Should kinda look like a world map (not a real test)', ->
             testBuilder = new WorldBuilder { towns: 25 }
             console.log(testBuilder.build().toString())
 
-describe 'World', () ->
+describe 'World', ->
     tiles = [
         [ null,                             null,                        new TownLandsCard(x: 2, y: 0) ]
         [ new TownLandsCard(x: 0, y: 1),    new LandsCard(x: 1, y: 1),   new LandsCard(x: 2, y: 1) ]
