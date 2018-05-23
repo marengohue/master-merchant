@@ -6,6 +6,7 @@ module.exports = class Game
         @cardRegistry ?= require './cfg/card-registry'
         @world = worldBuilder.build()
         @buildEncounterDecks()
+        @buildTownTradeDecks()
 
     buildEncounterDecks: ->
         @encounterDecks = {}
@@ -13,3 +14,8 @@ module.exports = class Game
 
     buildEncounterDeck: (ctor) ->
         @encounterDecks[ctor] = new Deck @cardRegistry.encounters[ctor]
+
+    buildTownTradeDecks: ->
+        itemCtors = @cardRegistry.items or []
+        @tradeDecks = @world.getTowns().map (town) =>
+            new Deck (itemCtors.map (itemCtor) -> new itemCtor)

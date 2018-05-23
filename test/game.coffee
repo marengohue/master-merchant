@@ -8,6 +8,7 @@ ForestLandsCard = require '../src/cards/lands/forest'
 TownLandsCard = require '../src/cards/lands/town'
 TavernBrawl = require '../src/cards/encounters/town/tavern-brawl'
 FriendInNeed = require '../src/cards/encounters/town/friend-in-need'
+ItemCard = require '../src/cards/items/item'
 
 TestUtil = require './lib/test-util'
 
@@ -80,3 +81,17 @@ describe 'Game', ->
                 for lands in landsConfig
                     for card in registry.encounters[lands.ctor]
                         chai.expect(game.encounterDecks[lands.ctor]).to.contain(card)
+    
+    describe 'Trade decks', ->    
+        it 'Should have a trade deck for each of the towns in play', ->
+            builder = new WorldBuilder
+                towns: 5
+            game = new Game builder, null
+            chai.expect(Object.keys(game.tradeDecks).length).to.equal 5
+
+        it 'Should have a trade deck full of item cards', ->
+            game = new Game fineBuilder 
+            chai.expect game.tradeDecks.every (deck) ->
+                deck.stack.every (card) ->
+                    card instanceof ItemCard
+            .to.be.true
