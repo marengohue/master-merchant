@@ -10,8 +10,9 @@ RiverLandsCard = require '../src/cards/lands/river'
 TownLandsCard = require '../src/cards/lands/town'
 WorldBuilder = require '../src/world/builder'
 MathUtil = require '../src/common/math-util'
-
 defaultCfg = require '../src/cfg/worldgen.json'
+
+TestUtil = require './lib/test-util'
 
 describe 'WorldBuilder', ->
     bareBuilder = new WorldBuilder
@@ -89,36 +90,37 @@ describe 'WorldBuilder', ->
             chai.expect(countTiles testWorld, (tile) -> (not tile instanceof PlainLandsCard) and (not tile instanceof ForestLandsCard)).to.equal 0
         
         it 'Should respect the weights for the tile cards', ->
-            sizeX = sizeY = 100
-            testBuilder = new WorldBuilder
-                availableLands: [
-                    { ctor: PlainLandsCard, weight: 10 }
-                    { ctor: ForestLandsCard, weight: 2 }
-                    { ctor: RiverLandsCard, weight: 1}
-                ]
-                sizeX
-                sizeY
-                towns: 0
-            testWorld = testBuilder.build()
+            TestUtil.testFailCount 3, ->
+                sizeX = sizeY = 100
+                testBuilder = new WorldBuilder
+                    availableLands: [
+                        { ctor: PlainLandsCard, weight: 10 }
+                        { ctor: ForestLandsCard, weight: 2 }
+                        { ctor: RiverLandsCard, weight: 1}
+                    ]
+                    sizeX
+                    sizeY
+                    towns: 0
+                testWorld = testBuilder.build()
 
-            plainsTilesCount = countTiles testWorld, (tile) -> (tile instanceof PlainLandsCard)
-            forestTilesCount = countTiles testWorld, (tile) -> (tile instanceof ForestLandsCard)
-            riverTilesCount = countTiles testWorld, (tile) -> (tile instanceof RiverLandsCard)
-            totalTiles = plainsTilesCount + forestTilesCount + riverTilesCount
+                plainsTilesCount = countTiles testWorld, (tile) -> (tile instanceof PlainLandsCard)
+                forestTilesCount = countTiles testWorld, (tile) -> (tile instanceof ForestLandsCard)
+                riverTilesCount = countTiles testWorld, (tile) -> (tile instanceof RiverLandsCard)
+                totalTiles = plainsTilesCount + forestTilesCount + riverTilesCount
 
-            chai.expect(Math.abs(plainsTilesCount / totalTiles - 10/13)).to.be.below(0.1)
-            chai.expect(Math.abs(forestTilesCount / totalTiles - 2/13)).to.be.below(0.1)
-            chai.expect(Math.abs(riverTilesCount / totalTiles - 1/13)).to.be.below(0.1)
+                chai.expect(Math.abs(plainsTilesCount / totalTiles - 10/13)).to.be.below(0.1)
+                chai.expect(Math.abs(forestTilesCount / totalTiles - 2/13)).to.be.below(0.1)
+                chai.expect(Math.abs(riverTilesCount / totalTiles - 1/13)).to.be.below(0.1)
 
-        it 'Should kinda look like a world map (not a real test)', ->
+        xit 'Should kinda look like a world map (not a real test)', ->
             testBuilder = new WorldBuilder sizeX: 100, sizeY: 50, towns: 100
             console.log(testBuilder.build().toString())
 
 describe 'World', ->
     tiles = [
-        [ null,                             null,                        new TownLandsCard(x: 2, y: 0) ]
-        [ new TownLandsCard(x: 0, y: 1),    new LandsCard(x: 1, y: 1),   new LandsCard(x: 2, y: 1) ]
-        [ null,                             null,                        null ]
+        [ null,                             null,                               new TownLandsCard(x: 2, y: 0) ]
+        [ new TownLandsCard(x: 0, y: 1),    new ForestLandsCard(x: 1, y: 1),    new RiverLandsCard(x: 2, y: 1) ]
+        [ null,                             null,                               null ]
     ]
     towns =  [
         { x: 0, y: 1 }
@@ -163,3 +165,12 @@ describe 'World', ->
 
         it 'Should yield the appropariate town cards', ->
             chai.expect(world.getTowns()).to.deep.equal(towns.map((p) -> tiles[p.y][p.x]))
+
+    describe '.getTileTypes', ->
+        it 'Should be a function', ->
+            chai.expect(typeof world.getTileTypes).to.equal 'function'
+
+        it 'Should yield a list of all available tile types for the world', ->
+            result = world.getTileTypes()
+            for ctor in [ForestLandsCard, RiverLandsCard, TownLandsCard]
+                chai.expect(result).to.include ctor

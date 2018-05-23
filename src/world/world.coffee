@@ -4,6 +4,7 @@ Printer = require '../common/printer'
 module.exports = class
     constructor: (@tiles, towns) ->
         @towns = towns.map (t) => @getTile t
+        @initTileTypes()
 
     getTile: (xOrP, y) ->
         if y?
@@ -21,5 +22,12 @@ module.exports = class
     toString: ->
         Printer.printWorldTiles @tiles
 
-    getTowns: ->
-        @towns
+    initTileTypes: ->
+        @tileTypes = []
+        for row in @tiles
+            for tile in row
+                if tile? and @tileTypes.indexOf(tile.constructor) is -1 then @tileTypes.push tile.constructor
+
+    getTileTypes: -> @tileTypes
+
+    getTowns: -> @towns
