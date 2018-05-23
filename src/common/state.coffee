@@ -1,0 +1,4 @@
+module.exports =
+    MOVEMENT: 'MOVEMENT'
+    TRADE: 'TRADE'
+    SIMULATION: 'SIMULATION'
