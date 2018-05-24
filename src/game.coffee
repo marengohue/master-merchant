@@ -6,15 +6,17 @@ Player = require './player'
 
 Deck = require './cards/deck'
 
+MathUtil = require './common/math-util'
+
 module.exports = class Game
-    constructor: (worldBuilder, @cardRegistry, @playerCount = 1) ->
+    constructor: (worldOrBuilder, @cardRegistry, @playerCount = 1) ->
         @cardRegistry ?= require './cfg/card-registry'
-        @world = worldBuilder.build()
+        @world = if worldOrBuilder instanceof WorldBuilder then worldOrBuilder.build() else worldOrBuilder
         @buildEncounterDecks()
         @buildTownTradeDecks()
         @state = GameState.MOVEMENT
         @turnCount = 1
-        @players = for playerNo in [1..@playerCount] then new Player()
+        @players = for playerNo in [1..@playerCount] then new Player(@world.towns[0].pos)
         @currentPlayerNo = 0
 
     @get 'currentPlayer', -> @players[@currentPlayerNo]
@@ -31,6 +33,21 @@ module.exports = class Game
         @tradeDecks = @world.getTowns().map (town) =>
             new Deck (itemCtors.map (itemCtor) -> new itemCtor)
 
-    performMove: ->
+    cyclePlayers: ->
+        @currentPlayerNo = if @currentPlayerNo + 1 is @playerCount then 0 else @currentPlayerNo + 1
+
+    getAvailableTilesToMove: ->
         if @state is GameState.MOVEMENT
-            @currentPlayerNo = if @currentPlayerNo + 1 is @playerCount then 0 else @currentPlayerNo + 1
+            MathUtil
+                .getNeighbours @currentPlayer.pos
+                .filter (p) => @world.getTile(p)?
+        else
+            [ ]
+
+    performMove: (toWhere) ->
+        if @state is GameState.MOVEMENT
+            if MathUtil.areAdjacent(@currentPlayer.pos, toWhere) and @world.getTile(toWhere)?
+                @currentPlayer.pos = toWhere
+                @cyclePlayers()
+            else
+                throw new Error 'Invalid movement'

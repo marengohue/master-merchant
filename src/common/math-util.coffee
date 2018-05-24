@@ -18,3 +18,6 @@ module.exports = class MathUtil
             { x: p.x + 1, y: p.y }
             { x: p.x, y: p.y - 1 }
         ]
+
+    @areAdjacent: (p0, p1) ->
+        @manhattanDistance(p0, p1) is 1

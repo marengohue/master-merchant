@@ -4,12 +4,15 @@ Game = require '../src/game'
 GameState = require '../src/common/state'
 
 WorldBuilder = require '../src/world/builder'
+World = require '../src/world/world'
 Player = require '../src/player'
 Deck = require '../src/cards/deck'
 
 PlainLandsCard = require '../src/cards/lands/plain' 
 ForestLandsCard = require '../src/cards/lands/forest'
 TownLandsCard = require '../src/cards/lands/town'
+
+
 TavernBrawl = require '../src/cards/encounters/town/tavern-brawl'
 FriendInNeed = require '../src/cards/encounters/town/friend-in-need'
 ItemCard = require '../src/cards/items/item'
@@ -17,6 +20,7 @@ ItemBasicFood = require '../src/cards/items/food/basic-food'
 ItemBasicDrink = require '../src/cards/items/drink/basic-drink'
 
 TestUtil = require './lib/test-util'
+MathUtil = require '../src/common/math-util'
 
 describe 'Game', ->
     fineBuilder = new WorldBuilder
@@ -29,6 +33,22 @@ describe 'Game', ->
 
             chai.expect -> new Game fineBuilder
                 .to.not.throw()
+
+        it 'Should use given world object', ->
+            tiles = [
+                [ null,                             null,                               new TownLandsCard(x: 2, y: 0) ]
+                [ new TownLandsCard(x: 0, y: 1),    new ForestLandsCard(x: 1, y: 1),    new PlainLandsCard(x: 2, y: 1) ]
+                [ null,                             null,                               null ]
+            ]
+            towns =  [
+                { x: 0, y: 1 }
+                { x: 2, y: 0 }
+            ]
+            world = new World tiles, towns
+            game = null
+            chai.expect(-> game = new Game world).to.not.throw()
+            chai.expect(game.world instanceof World).to.be.true
+            
 
         it 'Should use given card cfg', ->
             registry = 
@@ -121,14 +141,70 @@ describe 'Game', ->
         it 'Should always be played out by at least one player', ->
             chai.expect(game.players.length).to.equal 1
 
+        it 'Should list available tiles for player to move to', ->
+            game = new Game builder, null, 2 
+            availableTiles = game.getAvailableTilesToMove()
+            allTilesAreAdjacent = availableTiles.every (tile) -> MathUtil.areAdjacent(tile, game.currentPlayer.pos)
+            chai.expect(allTilesAreAdjacent).to.be.true
+
         it 'Should allow players to move one by one', ->
             game = new Game builder, null, 2 
             chai.expect(game.currentPlayer).to.exist
             chai.expect(game.currentPlayer).to.equal game.players[0]
-            game.performMove x: 0, y: 0
+            game.performMove(game.getAvailableTilesToMove()[0])
             chai.expect(game.currentPlayer).to.equal game.players[1]
-            game.performMove x: 0, y: 0
+            game.performMove(game.getAvailableTilesToMove()[0])
             chai.expect(game.currentPlayer).to.equal game.players[0]
+
+        it 'Should start the players on the first town in the list', ->
+            game = new Game builder, null, 2 
+            townPos = game.world.getTowns()[0].pos
+
+            # Works for generated worlds
+            chai.expect(game.players.every (p) -> MathUtil.equalPoints p.pos, townPos).to.be.true
+
+            tiles = [
+                [ null,                             null,                               new TownLandsCard(x: 2, y: 0) ]
+                [ new ForestLandsCard(x: 1, y: 1),  new TownLandsCard(x: 0, y: 1),      new PlainLandsCard(x: 2, y: 1) ]
+                [ null,                             null,                               null ]
+            ]
+            towns =  [
+                { x: 1, y: 1 }
+                { x: 2, y: 0 }
+            ]
+            presetWorld = new World tiles, towns
+            presetWorldGame = new Game presetWorld, null, 4
+            presetTownPos = presetWorldGame.world.getTowns()[0].pos
+            # Works for preset worlds
+            chai.expect(presetWorldGame.players.every (p) -> MathUtil.equalPoints p.pos, presetTownPos).to.be.true
+
+        it 'Should only allow movement to an adjacent non-null tile', ->
+            tiles = [
+                [ null,                             null,                               new TownLandsCard(x: 2, y: 0) ]
+                [ new ForestLandsCard(x: 0, y: 1),  new TownLandsCard(x: 1, y: 1),      new PlainLandsCard(x: 2, y: 1) ]
+                [ null,                             null,                               null ]
+            ]
+            towns =  [
+                { x: 1, y: 1 }
+                { x: 2, y: 0 }
+            ]
+            world = new World tiles, towns
+            game = new Game world, null, 2
+            # Moving to null-tiles is forbidden
+            chai.expect(-> game.performMove x: 1, y: 0).to.throw()
+            chai.expect(-> game.performMove x: 1, y: 2).to.throw()
+
+            # Moving to a non-manhattan-adjacent tile is forbidden
+            chai.expect(-> game.performMove x: 2, y: 0).to.throw()
+
+            # Moving to an adjacent tile is ok
+            chai.expect ->
+                game.performMove x: 0, y: 1
+            .to.not.throw()
+
+            # First player should have moved by that point
+            chai.expect(MathUtil.equalPoints game.players[0].pos, { x: 0, y: 1 }).to.be.true
+
 
 describe 'Player', ->
     player = new Player
