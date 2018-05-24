@@ -90,7 +90,7 @@ describe 'WorldBuilder', ->
             chai.expect(countTiles testWorld, (tile) -> (not tile instanceof PlainLandsCard) and (not tile instanceof ForestLandsCard)).to.equal 0
         
         it 'Should respect the weights for the tile cards', ->
-            TestUtil.testFailCount 3, ->
+            TestUtil.testFailCount 5, ->
                 sizeX = sizeY = 100
                 testBuilder = new WorldBuilder
                     availableLands: [

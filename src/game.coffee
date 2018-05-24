@@ -26,7 +26,8 @@ module.exports = class Game
         @world.getTileTypes().forEach((ctorType) => @buildEncounterDeck(ctorType))
 
     buildEncounterDeck: (ctor) ->
-        @encounterDecks[ctor] = new Deck @cardRegistry.encounters[ctor]
+        
+        @encounterDecks[ctor] = new Deck (@cardRegistry.encounters[ctor] or []).map((encounter) -> new encounter)
 
     buildTownTradeDecks: ->
         itemCtors = @cardRegistry.items or []
@@ -49,11 +50,18 @@ module.exports = class Game
         encounter = @encounterDecks[playerTile.constructor].getTop()
         if encounter? then encounter.resolve() else Promise.resolve(null)
 
+    isValidMovement: (toWhere) ->
+        MathUtil.areAdjacent(@currentPlayer.pos, toWhere) and @world.getTile(toWhere)?
+
     performMove: (toWhere) ->
-        if @state is GameState.MOVEMENT
-            if MathUtil.areAdjacent(@currentPlayer.pos, toWhere) and @world.getTile(toWhere)?
-                @currentPlayer.pos = toWhere
-                @resolveEncounter().then =>
-                    @cyclePlayers()
+        new Promise (resolve, reject) =>
+            if @state is GameState.MOVEMENT
+                if @isValidMovement toWhere
+                    @currentPlayer.pos = toWhere
+                    @resolveEncounter().then =>
+                        @cyclePlayers()
+                        resolve()
+                else
+                    reject(new Error 'Invalid movement')
             else
-                throw new Error 'Invalid movement'
+                reject(new Error 'Invalid state')
