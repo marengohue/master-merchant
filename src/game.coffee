@@ -44,10 +44,16 @@ module.exports = class Game
         else
             [ ]
 
+    resolveEncounter: ->
+        playerTile = @world.getTile @currentPlayer.pos
+        encounter = @encounterDecks[playerTile.constructor].getTop()
+        if encounter? then encounter.resolve() else Promise.resolve(null)
+
     performMove: (toWhere) ->
         if @state is GameState.MOVEMENT
             if MathUtil.areAdjacent(@currentPlayer.pos, toWhere) and @world.getTile(toWhere)?
                 @currentPlayer.pos = toWhere
-                @cyclePlayers()
+                @resolveEncounter().then =>
+                    @cyclePlayers()
             else
                 throw new Error 'Invalid movement'

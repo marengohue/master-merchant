@@ -6,13 +6,14 @@ GameState = require '../src/common/state'
 WorldBuilder = require '../src/world/builder'
 World = require '../src/world/world'
 Player = require '../src/player'
+Character = require '../src/character'
 Deck = require '../src/cards/deck'
 
 PlainLandsCard = require '../src/cards/lands/plain' 
 ForestLandsCard = require '../src/cards/lands/forest'
 TownLandsCard = require '../src/cards/lands/town'
 
-
+EncounterCard = require '../src/cards/encounters/encounter'
 TavernBrawl = require '../src/cards/encounters/town/tavern-brawl'
 FriendInNeed = require '../src/cards/encounters/town/friend-in-need'
 ItemCard = require '../src/cards/items/item'
@@ -205,6 +206,30 @@ describe 'Game', ->
             # First player should have moved by that point
             chai.expect(MathUtil.equalPoints game.players[0].pos, { x: 0, y: 1 }).to.be.true
 
+        it 'Should draw and play the top encounter when entering the appropariate tile', ->
+            builder = new WorldBuilder 
+                availableLands: [
+                    { ctor: PlainLandsCard, weight: 1 }
+                ]
+                
+                registry = 
+                    encounters: {}
+
+                dummyCalled = false
+                dummyEncounter = Object.create
+                    resolve: () ->
+                        new Promise (resolve, reject) ->
+                            dummyCalled = true
+                            resolve()
+
+                registry.encounters[TownLandsCard] = [ dummyEncounter ]
+                registry.encounters[PlainLandsCard] = [ dummyEncounter ]
+
+            game = new Game builder, registry, 1
+            game.performMove game.getAvailableTilesToMove()[0]
+            chai.expect(dummyCalled).to.be.true
+            chai.expect(game.encounterDecks[TownLandsCard].stack.length).to.be(0).or.expect(game.encounterDecks[PlainLandsCard].stack.length).to.be(0)
+
 
 describe 'Player', ->
     player = new Player
@@ -218,4 +243,8 @@ describe 'Player', ->
         chai.expect(player.wagon.stack.filter((item) -> item instanceof ItemBasicFood).length).to.equal 10
         chai.expect(player.wagon.stack.filter((item) -> item instanceof ItemBasicDrink).length).to.equal 10
         
-    
+    it 'Should have a party with at least current players character', ->
+        chai.expect(Array.isArray player.party).to.be.true
+        chai.expect(player.party.length).to.be.above 0
+        chai.expect(player.party).to.include player.playerCharacter
+        chai.expect(player.party.every (character) -> character instanceof Character).to.be.true
