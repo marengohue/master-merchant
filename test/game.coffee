@@ -24,6 +24,8 @@ ItemBasicDrink = require '../src/cards/items/drink/basic-drink'
 TestUtil = require './lib/test-util'
 MathUtil = require '../src/common/math-util'
 
+MoveState = require '../src/gamestate/move'
+
 describe 'Game', ->
     fineBuilder = new WorldBuilder
     
@@ -66,7 +68,7 @@ describe 'Game', ->
                 ]  
 
             game = new Game fineBuilder, registry
-            chai.expect(game.encounterDecks[ForestLandsCard].stack).to.deep.equal [ TavernBrawl ]
+            chai.expect(game.encounterDecks[ForestLandsCard].stack.map (encounter) -> encounter.constructor).to.deep.equal [ TavernBrawl ]
 
         describe 'Encounter decks', ->
             it 'Should have a deck for each terrain type in the world', ->
@@ -150,6 +152,12 @@ describe 'Game', ->
             allTilesAreAdjacent = availableTiles.every (tile) -> MathUtil.areAdjacent(tile, game.currentPlayer.pos)
             chai.expect(allTilesAreAdjacent).to.be.true
 
+        it 'Should give the players and object to perform state-dependend actions', ->
+            game = new Game builder, null, 1
+            chai.expect(game.stateActions).to.exist
+            chai.expect(typeof game.stateActions).to.be.an.instance.of MoveState
+            chai.expect(typeof game.stateActions)
+
         it 'Should allow players to move one by one', ->
             game = new Game builder, null, 2 
             chai.expect(game.currentPlayer).to.exist
@@ -216,14 +224,14 @@ describe 'Game', ->
                     encounters: {}
 
                 dummyCalled = false
-                dummyEncounter = Object.create
+                dummyEncounterCtor = class
                     resolve: () ->
                         new Promise (resolve, reject) ->
                             dummyCalled = true
                             resolve()
 
-                registry.encounters[TownLandsCard] = [ dummyEncounter ]
-                registry.encounters[PlainLandsCard] = [ dummyEncounter ]
+                registry.encounters[TownLandsCard] = [ dummyEncounterCtor ]
+                registry.encounters[PlainLandsCard] = [ dummyEncounterCtor ]
 
             game = new Game builder, registry, 1
             game.performMove game.getAvailableTilesToMove()[0]
@@ -234,12 +242,15 @@ describe 'Game', ->
             builder = new WorldBuilder
             game = new Game builder, null, 2
             initialPosition = game.currentPlayer.pos
+            chai.expect(game.turnCount).to.equal 1
             game.performMove game.getAvailableTilesToMove()[0]
                 .then ->
                     game.performMove game.getAvailableTilesToMove()[0]
                         .then ->
                             # Expect move state since all of the players are out of the towns
                             chai.expect(game.state).to.equal GameState.MOVEMENT
+                            chai.expect(game.turnCount).to.equal 2
+
                             game.performMove initialPosition
                                 .then ->
                                     # Expect move state since not all of the players are done with their movements
@@ -248,6 +259,7 @@ describe 'Game', ->
                                         .then ->
                                             # Finally should be trading since all of the players are done moving
                                             # and we have players in town
+                                            chai.expect(game.turnCount).to.equal 2
                                             chai.expect(game.state).to.equal GameState.TRADE
 
 describe 'Player', ->

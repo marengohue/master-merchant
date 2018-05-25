@@ -5,8 +5,11 @@ GameState = require './common/state'
 Player = require './player'
 
 Deck = require './cards/deck'
+TownLandsCard = require './cards/lands/town'
 
 MathUtil = require './common/math-util'
+
+MoveState = require './gamestate/move'
 
 module.exports = class Game
     constructor: (worldOrBuilder, @cardRegistry, @playerCount = 1) ->
@@ -14,10 +17,10 @@ module.exports = class Game
         @world = if worldOrBuilder instanceof WorldBuilder then worldOrBuilder.build() else worldOrBuilder
         @buildEncounterDecks()
         @buildTownTradeDecks()
-        @state = GameState.MOVEMENT
-        @turnCount = 1
         @players = for playerNo in [1..@playerCount] then new Player(@world.towns[0].pos)
         @currentPlayerNo = 0
+        @turnCount = 1
+        @state = new MoveState @players[0], @
 
     @get 'currentPlayer', -> @players[@currentPlayerNo]
 
@@ -26,8 +29,8 @@ module.exports = class Game
         @world.getTileTypes().forEach((ctorType) => @buildEncounterDeck(ctorType))
 
     buildEncounterDeck: (ctor) ->
-        
-        @encounterDecks[ctor] = new Deck (@cardRegistry.encounters[ctor] or []).map((encounter) -> new encounter)
+        encounterConstructors = @cardRegistry.encounters[ctor] or []
+        @encounterDecks[ctor] = new Deck (encounterConstructors.map((encounter) -> new encounter))
 
     buildTownTradeDecks: ->
         itemCtors = @cardRegistry.items or []
@@ -37,31 +40,35 @@ module.exports = class Game
     cyclePlayers: ->
         @currentPlayerNo = if @currentPlayerNo + 1 is @playerCount then 0 else @currentPlayerNo + 1
 
-    getAvailableTilesToMove: ->
-        if @state is GameState.MOVEMENT
-            MathUtil
-                .getNeighbours @currentPlayer.pos
-                .filter (p) => @world.getTile(p)?
-        else
-            [ ]
-
-    resolveEncounter: ->
-        playerTile = @world.getTile @currentPlayer.pos
-        encounter = @encounterDecks[playerTile.constructor].getTop()
-        if encounter? then encounter.resolve() else Promise.resolve(null)
-
-    isValidMovement: (toWhere) ->
-        MathUtil.areAdjacent(@currentPlayer.pos, toWhere) and @world.getTile(toWhere)?
-
-    performMove: (toWhere) ->
+    tryGoToWorldSimState: ->
         new Promise (resolve, reject) =>
-            if @state is GameState.MOVEMENT
-                if @isValidMovement toWhere
-                    @currentPlayer.pos = toWhere
-                    @resolveEncounter().then =>
-                        @cyclePlayers()
-                        resolve()
+            @state = GameState.SIMULATION
+            @finishTurn().then =>
+                resolve()
+
+    tryGoToTradeState: ->
+        new Promise (resolve, reject) =>
+            if @currentPlayer is @players[0]
+                firstPlayerInTradeState = @players.findIndex (p) => @world.getTile(p.pos) instanceof TownLandsCard
+                if firstPlayerInTradeState isnt -1
+                    @currentPlayerNo = firstPlayerInTradeState
+                    @state = GameState.TRADE
+                    resolve()
                 else
-                    reject(new Error 'Invalid movement')
+                    @tryGoToWorldSimState().then =>
+                        resolve()
             else
-                reject(new Error 'Invalid state')
+                resolve()
+
+    finishTurn: ->
+        new Promise (resolve, reject) =>
+            @currentPlayerNo = 0
+            @turnCount += 1
+            @state = GameState.MOVEMENT
+            resolve()
+
+    processStateTransition: ->
+
+
+    getState: ->
+        @state
