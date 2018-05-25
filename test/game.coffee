@@ -24,7 +24,7 @@ ItemBasicDrink = require '../src/cards/items/drink/basic-drink'
 TestUtil = require './lib/test-util'
 MathUtil = require '../src/common/math-util'
 
-MoveState = require '../src/gamestate/move'
+MoveTurn = require '../src/gamestate/move'
 
 describe 'Game', ->
     fineBuilder = new WorldBuilder
@@ -133,7 +133,7 @@ describe 'Game', ->
         game = new Game builder
         
         it 'Should track game state', ->
-            chai.expect(game.state).to.equal GameState.MOVEMENT
+            chai.expect(game.state).to.be.instanceof MoveTurn
             chai.expect(game.turnCount).to.equal 1
 
         it 'Should track players', ->
@@ -148,24 +148,27 @@ describe 'Game', ->
 
         it 'Should list available tiles for player to move to', ->
             game = new Game builder, null, 2 
-            availableTiles = game.getAvailableTilesToMove()
-            allTilesAreAdjacent = availableTiles.every (tile) -> MathUtil.areAdjacent(tile, game.currentPlayer.pos)
+            availableTiles = game.state.getAvailableTilesToMove()
+            allTilesAreAdjacent = availableTiles.every (tile) -> MathUtil.areAdjacent(tile, game.state.player.pos)
             chai.expect(allTilesAreAdjacent).to.be.true
 
         it 'Should give the players and object to perform state-dependend actions', ->
             game = new Game builder, null, 1
-            chai.expect(game.stateActions).to.exist
-            chai.expect(typeof game.stateActions).to.be.an.instance.of MoveState
+            chai.expect(typeof game.stateActions).to.be.an.instanceof MoveTurn
             chai.expect(typeof game.stateActions)
 
-        it 'Should allow players to move one by one', ->
+        it 'Should switch states upon completion of turn', ->
             game = new Game builder, null, 2 
-            chai.expect(game.currentPlayer).to.exist
-            chai.expect(game.currentPlayer).to.equal game.players[0]
-            game.performMove(game.getAvailableTilesToMove()[0]).then ->
-                chai.expect(game.currentPlayer).to.equal game.players[1]
-                game.performMove(game.getAvailableTilesToMove()[0]).then ->
-                    chai.expect(game.currentPlayer).to.equal game.players[0]
+            chai.expect(game.state.player).to.exist
+            chai.expect(game.state.player).to.equal game.players[0]
+            firstState = game.state
+            firstState.moveTo(firstState.getAvailableTilesToMove()[0])
+            firstState.whenDone.then ->
+                secondState = game.state
+                chai.expect(secondState.player).to.equal game.players[1]
+                secondState.moveTo(secondState.getAvailableTilesToMove()[0])
+                secondState.whenDone.then ->
+                    chai.expect(game.state.player).to.equal game.players[0]
 
         it 'Should start the players on the first town in the list', ->
             game = new Game builder, null, 2 

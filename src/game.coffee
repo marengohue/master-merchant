@@ -18,11 +18,9 @@ module.exports = class Game
         @buildEncounterDecks()
         @buildTownTradeDecks()
         @players = for playerNo in [1..@playerCount] then new Player(@world.towns[0].pos)
-        @currentPlayerNo = 0
         @turnCount = 1
         @state = new MoveState @players[0], @
-
-    @get 'currentPlayer', -> @players[@currentPlayerNo]
+        @state.whenDone.then => @processStateTransition()
 
     buildEncounterDecks: ->
         @encounterDecks = {}
@@ -36,9 +34,6 @@ module.exports = class Game
         itemCtors = @cardRegistry.items or []
         @tradeDecks = @world.getTowns().map (town) =>
             new Deck (itemCtors.map (itemCtor) -> new itemCtor)
-
-    cyclePlayers: ->
-        @currentPlayerNo = if @currentPlayerNo + 1 is @playerCount then 0 else @currentPlayerNo + 1
 
     tryGoToWorldSimState: ->
         new Promise (resolve, reject) =>
@@ -68,6 +63,13 @@ module.exports = class Game
             resolve()
 
     processStateTransition: ->
+        if (@state instanceof MoveTurn)
+            if @state.player is @players[@playerCount - 1]
+                firstPlayerInTradeState = @players.findIndex (p) => @world.getTile(p.pos) instanceof TownLandsCard
+                @state = new TradeTurn @players[firstPlayerInTradeState], @
+            else
+                @currentPlayerNo + 1
+                @state = new TradeMove @playes[@currentPlayerNo]
 
 
     getState: ->
