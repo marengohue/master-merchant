@@ -27,7 +27,9 @@ describe 'WorldBuilder', ->
             count = 0
             for x in [0..size.x - 1]
                 for y in [0..size.y - 1]
-                    if (predecate(world.getTile x, y)) then count++
+                    if (predecate(world.getTile x, y))
+                        count+= 1
+                        console.log x, y
             count
             
         alreadyTraversed = (traversed, p) ->
@@ -55,6 +57,9 @@ describe 'WorldBuilder', ->
             testWorld = testBuilder.build()
             countTowns = (land) ->
                 land instanceof TownLandsCard
+            console.log testWorld.getTowns()
+            console.log testWorld.getSize()
+            console.log testWorld.tiles.map (row) -> row.length
             chai.expect(countTiles(testWorld, countTowns)).to.equal 5
 
         it 'Should generate the map with all the towns connected', ->
@@ -180,7 +185,7 @@ describe 'World', ->
             chai.expect(result.length).to.equal 2
 
         it 'Should yield the appropariate town cards', ->
-            chai.expect(world.getTowns()).to.deep.equal(towns.map((p) -> tiles[p.y][p.x]))
+            chai.expect(world.getTowns().every((town) -> towns.find((t) -> MathUtil.equalPoints town.pos, t)?)).to.be.true
 
     describe '.getFlatTiles', ->
         it 'Should be a function', ->

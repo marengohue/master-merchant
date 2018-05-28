@@ -216,7 +216,6 @@ describe 'Game', ->
 
             # Moving to an adjacent tile is ok
             moveState = game.state
-            console.log game.state.player.pos
             chai.expect(-> moveState.moveTo x: 2, y: 1).to.not.throw()
             moveState.whenDone.then ->
                 # First player should have moved by that point

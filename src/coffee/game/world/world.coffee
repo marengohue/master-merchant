@@ -26,8 +26,8 @@ module.exports = class
 
     getSize: ->
         {
-            x: @tiles.length
-            y: @tiles[0].length or 0
+            x: @tiles[0].length or 0
+            y: @tiles.length
         }
 
     toString: ->

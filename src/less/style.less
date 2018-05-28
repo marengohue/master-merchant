@@ -1,33 +1,54 @@
-.world-map {
-    position: relative;
-    padding: 0;
-    margin-bottom: 200px;
-    width: calc(100% - 50px);
+@import './colors.less';
+@import './dimmer.less';
 
-    .tile-card {
+body {
+    .world-map {
+        position: relative;
+        padding: 0;
+        margin-bottom: 200px;
+        width: calc(100% - 50px);
         transform: scale(0.35);
-        position: absolute;
-        list-style: none;
-        height: 290px;
-        width: 210px;
-        background-color: #453a51;
-        color: white;
-        border-radius: 10px;
-        border-bottom: 3px solid #2a2b41;
-        border-right: 3px solid #2a2b41;
-        padding: 10px 5px;
-  
-        figure.image {
-            text-align: center;
-            font-size: 100px;
-            margin: 0;
-            color: gold;
-        }
+        transform-origin: 0 0 0;
 
-        span.header {
-            text-align: center;
-            display: block;
-            font-size: 20px;
+        .tile-card {
+            transition: 0.3s;
+            
+            &.zoomed {
+                transform: scale(3) translate(-50%, -50%);
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform-origin: 50% 50%;
+                z-index: 15;
+            }
+
+            &:hover {
+                box-shadow: 0px 0px 10px 10px @color_text_card;
+            }
+
+            position: absolute;
+            list-style: none;
+            height: 287px;
+            width: 207px;
+            background-color: @color_card_primary;
+            color: @color_text_card;
+            border-radius: 10px;
+            border-bottom: 3px solid @color_card_border;
+            border-right: 3px solid @color_card_border;
+            padding: 10px 5px;
+    
+            figure.image {
+                text-align: center;
+                font-size: 100px;
+                margin: 0;
+                color: @color_text_card;
+            }
+
+            span.header {
+                text-align: center;
+                display: block;
+                font-size: 20px;
+            }
         }
     }
 }

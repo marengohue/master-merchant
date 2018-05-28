@@ -33,19 +33,19 @@ module.exports = class WorldBuilder
 
     trimUnnecessaryTiles: (tiles) ->
         while (tiles[0].every((tile) -> tile is null))
-            console.log tiles.shift()
+            tiles.shift()
             @options.sizeY -= 1
 
         while (tiles[tiles.length - 1].every((tile) -> tile is null))
-            console.log tiles.pop()
+            tiles.pop()
             @options.sizeY -= 1
 
         while (tiles.every((row) -> row[0] is null))
-            tiles.forEach (row) -> console.log(row.shift())
+            tiles.forEach (row) -> row.shift()
             @options.sizeX -= 1
 
         while (tiles.every((row) -> row[row.length - 1] is null))
-            tiles.forEach (row) -> console.log(row.pop())
+            tiles.forEach (row) -> row.pop()
             @options.sizeX -= 1
 
     prepareTilesMatrix: () ->
