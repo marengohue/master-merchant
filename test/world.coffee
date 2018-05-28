@@ -41,11 +41,14 @@ describe 'WorldBuilder', ->
 
         it 'Should provide default minimal options', ->
             defaultWorld = bareBuilder.build()
-            chai.expect(defaultWorld.getSize()).to.deep.equal { x: defaultCfg.sizeX, y: defaultCfg.sizeY }
+            chai.expect(defaultWorld.getSize().x).to.be.at.most defaultCfg.sizeX
+            chai.expect(defaultWorld.getSize().y).to.be.at.most defaultCfg.sizeY
 
         it 'Should build the world that has certain size', ->
             testBuilder = new WorldBuilder { sizeX: 10, sizeY: 10 }
-            chai.expect(testBuilder.build().getSize()).to.deep.equal { x: 10, y: 10 }
+            worldSize = testBuilder.build().getSize()
+            chai.expect(worldSize.x).to.be.at.most 10
+            chai.expect(worldSize.y).to.be.at.most 10
 
         it 'Should build the world that has a certain number of towns', ->
             testBuilder = new WorldBuilder { towns: 5 }
@@ -111,6 +114,19 @@ describe 'WorldBuilder', ->
                 chai.expect(Math.abs(plainsTilesCount / totalTiles - 10/13)).to.be.below(0.1)
                 chai.expect(Math.abs(forestTilesCount / totalTiles - 2/13)).to.be.below(0.1)
                 chai.expect(Math.abs(riverTilesCount / totalTiles - 1/13)).to.be.below(0.1)
+
+        it 'Should trim the matrix to remove unnecessary rows and columns', ->
+            TestUtil.testSuccessCount 5, ->
+                testBuilder = new WorldBuilder 
+                world = testBuilder.build()
+                #First row has at least a single tile
+                chai.expect(world.tiles[0].some((tile) -> !!tile)).to.be.true
+                #Last row has at least a single tile
+                chai.expect(world.tiles[world.tiles.length - 1].some((tile) -> !!tile)).to.be.true
+                #First column has at least a single tile
+                chai.expect(world.tiles.some((row) -> !!row[0])).to.be.true
+                #Last column has at least a single tile
+                chai.expect(world.tiles.some((row) -> !!row[row.length - 1])).to.be.true
 
         xit 'Should kinda look like a world map (not a real test)', ->
             testBuilder = new WorldBuilder sizeX: 100, sizeY: 50, towns: 100

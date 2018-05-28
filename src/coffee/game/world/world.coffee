@@ -1,10 +1,11 @@
 LandsCard = require '../cards/lands/lands.coffee'
+TownLandsCard = require '../cards/lands/town.coffee'
 Printer = require '../common/printer.coffee'
 
 module.exports = class
-    constructor: (@tiles, towns) ->
-        @towns = towns.map (t) => @getTile t
+    constructor: (@tiles) ->
         @initFlatTiles()
+        @towns = @flatTiles.filter (tile) -> tile instanceof TownLandsCard
         @initTileTypes()
 
     getTile: (xOrP, y) ->

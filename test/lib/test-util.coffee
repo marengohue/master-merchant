@@ -11,3 +11,8 @@ module.exports = class TestUtil
                 failCount -= 1
         if failCount is 0
             throw lastError
+
+    @testSuccessCount: (successCount, testFn) ->
+        while successCount isnt 0
+            testFn()
+            successCount -= 1

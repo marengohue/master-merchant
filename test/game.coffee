@@ -216,10 +216,11 @@ describe 'Game', ->
 
             # Moving to an adjacent tile is ok
             moveState = game.state
-            chai.expect(-> moveState.moveTo x: 0, y: 1).to.not.throw()
+            console.log game.state.player.pos
+            chai.expect(-> moveState.moveTo x: 2, y: 1).to.not.throw()
             moveState.whenDone.then ->
                 # First player should have moved by that point
-                chai.expect(MathUtil.equalPoints game.players[0].pos, { x: 0, y: 1 }).to.be.true
+                chai.expect(MathUtil.equalPoints game.players[0].pos, { x: 2, y: 1 }).to.be.true
 
         it 'Should draw and play the top encounter when entering the appropariate tile', ->
             builder = new WorldBuilder 

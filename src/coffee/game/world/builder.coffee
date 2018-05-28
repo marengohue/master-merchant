@@ -11,7 +11,7 @@ defaultCfg = require '../cfg/worldgen.json'
 
 module.exports = class WorldBuilder
     constructor: (@options) ->
-        @options ?= defaultCfg
+        @options ?= JSON.parse(JSON.stringify(defaultCfg))
         @options.sizeX ?= defaultCfg.sizeX
         @options.sizeY ?= defaultCfg.sizeY
         @options.towns ?= defaultCfg.towns
@@ -31,6 +31,23 @@ module.exports = class WorldBuilder
                 prevWeight += landsRegistryObj.weight / landsRandomizerCoefficient
                 landsRegistryObj.weight = prevWeight
 
+    trimUnnecessaryTiles: (tiles) ->
+        while (tiles[0].every((tile) -> tile is null))
+            console.log tiles.shift()
+            @options.sizeY -= 1
+
+        while (tiles[tiles.length - 1].every((tile) -> tile is null))
+            console.log tiles.pop()
+            @options.sizeY -= 1
+
+        while (tiles.every((row) -> row[0] is null))
+            tiles.forEach (row) -> console.log(row.shift())
+            @options.sizeX -= 1
+
+        while (tiles.every((row) -> row[row.length - 1] is null))
+            tiles.forEach (row) -> console.log(row.pop())
+            @options.sizeX -= 1
+
     prepareTilesMatrix: () ->
         new Array(@options.sizeX).fill(null) for column in [0..@options.sizeY-1]
 
@@ -38,8 +55,14 @@ module.exports = class WorldBuilder
         tiles = @prepareTilesMatrix()
         towns = @placeTowns tiles
         @connectTowns tiles, towns
-        new World tiles, towns
+        @trimUnnecessaryTiles tiles
 
+        tiles.forEach (row, y) =>
+            row.forEach (tile, x) =>
+                if tile? then tile.pos = { x, y }
+        
+        new World tiles
+        
     placeTown: (tiles, town) ->
         tiles[town.y][town.x] = new TownLandsCard town
 
