@@ -1,31 +1,30 @@
 chai = require 'chai'
 chai.use(require 'chai-as-promised')
 
-Game = require '../src/game'
-GameState = require '../src/common/state'
+Game = require '../src/coffee/game'
 
-WorldBuilder = require '../src/world/builder'
-World = require '../src/world/world'
-Player = require '../src/player'
-Character = require '../src/cards/characters/character'
-Deck = require '../src/cards/deck'
+WorldBuilder = require '../src/coffee/world/builder'
+World = require '../src/coffee/world/world'
+Player = require '../src/coffee/player'
+Character = require '../src/coffee/cards/characters/character'
+Deck = require '../src/coffee/cards/deck'
 
-PlainLandsCard = require '../src/cards/lands/plain' 
-ForestLandsCard = require '../src/cards/lands/forest'
-TownLandsCard = require '../src/cards/lands/town'
+PlainLandsCard = require '../src/coffee/cards/lands/plain' 
+ForestLandsCard = require '../src/coffee/cards/lands/forest'
+TownLandsCard = require '../src/coffee/cards/lands/town'
 
-EncounterCard = require '../src/cards/encounters/encounter'
-TavernBrawl = require '../src/cards/encounters/town/tavern-brawl'
-FriendInNeed = require '../src/cards/encounters/town/friend-in-need'
-ItemCard = require '../src/cards/items/item'
-ItemBasicFood = require '../src/cards/items/food/basic-food'
-ItemBasicDrink = require '../src/cards/items/drink/basic-drink'
+EncounterCard = require '../src/coffee/cards/encounters/encounter'
+TavernBrawl = require '../src/coffee/cards/encounters/town/tavern-brawl'
+FriendInNeed = require '../src/coffee/cards/encounters/town/friend-in-need'
+ItemCard = require '../src/coffee/cards/items/item'
+ItemBasicFood = require '../src/coffee/cards/items/food/basic-food'
+ItemBasicDrink = require '../src/coffee/cards/items/drink/basic-drink'
 
 TestUtil = require './lib/test-util'
-MathUtil = require '../src/common/math-util'
+MathUtil = require '../src/coffee/common/math-util'
 
-MoveTurn = require '../src/gamestate/move'
-TradeTurn = require '../src/gamestate/trade'
+MoveTurn = require '../src/coffee/gamestate/move'
+TradeTurn = require '../src/coffee/gamestate/trade'
 
 describe 'Game', ->
     fineBuilder = new WorldBuilder

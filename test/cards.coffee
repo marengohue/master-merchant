@@ -1,7 +1,7 @@
 chai = require 'chai'
 
-Deck = require '../src/cards/deck'
-Card = require '../src/cards/card'
+Deck = require '../src/coffee/cards/deck'
+Card = require '../src/coffee/cards/card'
 
 describe 'Deck', ->
     deck = new Deck

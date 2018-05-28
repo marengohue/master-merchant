@@ -1,16 +1,16 @@
 chai = require 'chai'
 
-World = require '../src/world/world'
+World = require '../src/coffee/world/world'
 
-LandsCard = require '../src/cards/lands/lands'
-PlainLandsCard = require '../src/cards/lands/plain'
-ForestLandsCard = require '../src/cards/lands/forest'
-RiverLandsCard = require '../src/cards/lands/river'
+LandsCard = require '../src/coffee/cards/lands/lands'
+PlainLandsCard = require '../src/coffee/cards/lands/plain'
+ForestLandsCard = require '../src/coffee/cards/lands/forest'
+RiverLandsCard = require '../src/coffee/cards/lands/river'
 
-TownLandsCard = require '../src/cards/lands/town'
-WorldBuilder = require '../src/world/builder'
-MathUtil = require '../src/common/math-util'
-defaultCfg = require '../src/cfg/worldgen.json'
+TownLandsCard = require '../src/coffee/cards/lands/town'
+WorldBuilder = require '../src/coffee/world/builder'
+MathUtil = require '../src/coffee/common/math-util'
+defaultCfg = require '../src/coffee/cfg/worldgen.json'
 
 TestUtil = require './lib/test-util'
 
