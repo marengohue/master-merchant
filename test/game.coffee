@@ -7,7 +7,7 @@ GameState = require '../src/common/state'
 WorldBuilder = require '../src/world/builder'
 World = require '../src/world/world'
 Player = require '../src/player'
-Character = require '../src/character'
+Character = require '../src/cards/characters/character'
 Deck = require '../src/cards/deck'
 
 PlainLandsCard = require '../src/cards/lands/plain' 

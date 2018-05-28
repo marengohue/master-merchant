@@ -1,5 +1,5 @@
 Deck = require './cards/deck'
-Character = require './character'
+Character = require './cards/characters/character'
 ItemBasicDrink = require './cards/items/drink/basic-drink'
 ItemBasicFood = require './cards/items/food/basic-food'
 
