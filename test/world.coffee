@@ -1,16 +1,16 @@
 chai = require 'chai'
 
-World = require '../src/coffee/world/world'
+World = require '../src/coffee/game/world/world'
 
-LandsCard = require '../src/coffee/cards/lands/lands'
-PlainLandsCard = require '../src/coffee/cards/lands/plain'
-ForestLandsCard = require '../src/coffee/cards/lands/forest'
-RiverLandsCard = require '../src/coffee/cards/lands/river'
+LandsCard = require '../src/coffee/game/cards/lands/lands'
+PlainLandsCard = require '../src/coffee/game/cards/lands/plain'
+ForestLandsCard = require '../src/coffee/game/cards/lands/forest'
+RiverLandsCard = require '../src/coffee/game/cards/lands/river'
 
-TownLandsCard = require '../src/coffee/cards/lands/town'
-WorldBuilder = require '../src/coffee/world/builder'
-MathUtil = require '../src/coffee/common/math-util'
-defaultCfg = require '../src/coffee/cfg/worldgen.json'
+TownLandsCard = require '../src/coffee/game/cards/lands/town'
+WorldBuilder = require '../src/coffee/game/world/builder'
+MathUtil = require '../src/coffee/game/common/math-util'
+defaultCfg = require '../src/coffee/game/cfg/worldgen.json'
 
 TestUtil = require './lib/test-util'
 
@@ -165,6 +165,13 @@ describe 'World', ->
 
         it 'Should yield the appropariate town cards', ->
             chai.expect(world.getTowns()).to.deep.equal(towns.map((p) -> tiles[p.y][p.x]))
+
+    describe '.getFlatTiles', ->
+        it 'Should be a function', ->
+            chai.expect(typeof world.getFlatTiles).to.equal 'function'
+
+        it 'Should return a flat list of all non-null tiles', ->
+            chai.expect(world.getFlatTiles().every((tile) -> world.getTile(tile.pos) is tile)).to.be.true
 
     describe '.getTileTypes', ->
         it 'Should be a function', ->

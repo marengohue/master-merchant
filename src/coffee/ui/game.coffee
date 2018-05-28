@@ -1,12 +1,9 @@
 React = require 'react'
-
-Game = require '../game/game.coffee'
-WorldBuilder = require '../game/world/builder.coffee'
+WorldMapComponent = require './map.coffee'
 
 module.exports = class GameComponent extends React.Component
-    constructor: (props) ->
-        super props
-        @game = new Game (new WorldBuilder), null, 1
-
     render: ->
-        <p> Ok, the game is setup </p>
+        (<div>
+            <p>Ok, the turn is {@props.game.turnCount}</p>
+            <WorldMapComponent world={@props.game.world}/>
+        </div>)

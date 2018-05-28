@@ -1,9 +1,8 @@
 EncounterCard = require '../encounter.coffee'
-Colors = require 'colors'
 
 module.exports = class FriendInNeedEncounterCard extends EncounterCard
     toString: () ->
-        Colors.red 'f'
+        'f'
 
     resolve: () ->
         Promise.resolve null

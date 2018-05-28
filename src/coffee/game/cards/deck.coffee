@@ -6,7 +6,7 @@ module.exports = class Deck
     getTop: (count) ->
         if count?
             newStack = for card in [1..count] then @stack.pop()
-            new Deck(newStack)
+            new Deck(newStack.reverse())
         else
             @stack.pop()
 

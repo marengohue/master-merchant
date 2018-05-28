@@ -1,5 +1,4 @@
 LandsCard = require './lands.coffee'
-Colors = require 'colors'
 
 module.exports = class RiverLandsCard extends LandsCard   
     constructor: (@pos) ->
@@ -7,4 +6,4 @@ module.exports = class RiverLandsCard extends LandsCard
         
 
     toString: () ->
-        Colors.blue '≈'
+        '≈'

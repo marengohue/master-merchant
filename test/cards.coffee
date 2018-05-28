@@ -1,7 +1,11 @@
 chai = require 'chai'
 
-Deck = require '../src/coffee/cards/deck'
-Card = require '../src/coffee/cards/card'
+Deck = require '../src/coffee/game/cards/deck'
+Card = require '../src/coffee/game/cards/card'
+
+describe 'Card', ->
+    it 'Should have an id', ->
+        chai.expect(new Card).to.have.property 'uid'
 
 describe 'Deck', ->
     deck = new Deck

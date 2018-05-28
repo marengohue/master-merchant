@@ -1,30 +1,30 @@
 chai = require 'chai'
 chai.use(require 'chai-as-promised')
 
-Game = require '../src/coffee/game'
+Game = require '../src/coffee/game/game'
 
-WorldBuilder = require '../src/coffee/world/builder'
-World = require '../src/coffee/world/world'
-Player = require '../src/coffee/player'
-Character = require '../src/coffee/cards/characters/character'
-Deck = require '../src/coffee/cards/deck'
+WorldBuilder = require '../src/coffee/game/world/builder'
+World = require '../src/coffee/game/world/world'
+Player = require '../src/coffee/game/player'
+Character = require '../src/coffee/game/cards/characters/character'
+Deck = require '../src/coffee/game/cards/deck'
 
-PlainLandsCard = require '../src/coffee/cards/lands/plain' 
-ForestLandsCard = require '../src/coffee/cards/lands/forest'
-TownLandsCard = require '../src/coffee/cards/lands/town'
+PlainLandsCard = require '../src/coffee/game/cards/lands/plain' 
+ForestLandsCard = require '../src/coffee/game/cards/lands/forest'
+TownLandsCard = require '../src/coffee/game/cards/lands/town'
 
-EncounterCard = require '../src/coffee/cards/encounters/encounter'
-TavernBrawl = require '../src/coffee/cards/encounters/town/tavern-brawl'
-FriendInNeed = require '../src/coffee/cards/encounters/town/friend-in-need'
-ItemCard = require '../src/coffee/cards/items/item'
-ItemBasicFood = require '../src/coffee/cards/items/food/basic-food'
-ItemBasicDrink = require '../src/coffee/cards/items/drink/basic-drink'
+EncounterCard = require '../src/coffee/game/cards/encounters/encounter'
+TavernBrawl = require '../src/coffee/game/cards/encounters/town/tavern-brawl'
+FriendInNeed = require '../src/coffee/game/cards/encounters/town/friend-in-need'
+ItemCard = require '../src/coffee/game/cards/items/item'
+ItemBasicFood = require '../src/coffee/game/cards/items/food/basic-food'
+ItemBasicDrink = require '../src/coffee/game/cards/items/drink/basic-drink'
 
 TestUtil = require './lib/test-util'
-MathUtil = require '../src/coffee/common/math-util'
+MathUtil = require '../src/coffee/game/common/math-util'
 
-MoveTurn = require '../src/coffee/gamestate/move'
-TradeTurn = require '../src/coffee/gamestate/trade'
+MoveTurn = require '../src/coffee/game/gamestate/move'
+TradeTurn = require '../src/coffee/game/gamestate/trade'
 
 describe 'Game', ->
     fineBuilder = new WorldBuilder

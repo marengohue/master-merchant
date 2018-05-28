@@ -4,6 +4,7 @@ Printer = require '../common/printer.coffee'
 module.exports = class
     constructor: (@tiles, towns) ->
         @towns = towns.map (t) => @getTile t
+        @initFlatTiles()
         @initTileTypes()
 
     getTile: (xOrP, y) ->
@@ -13,6 +14,15 @@ module.exports = class
         else if xOrP.x? and xOrP.y?
             @getTile xOrP.x, xOrP.y
         
+    initFlatTiles: ->
+        @flatTiles = []
+        for row in @tiles
+            for tile in row
+                if tile? then @flatTiles.push tile
+
+    getFlatTiles: ->
+        @flatTiles
+
     getSize: ->
         {
             x: @tiles.length
