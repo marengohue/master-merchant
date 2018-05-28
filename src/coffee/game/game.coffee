@@ -1,4 +1,3 @@
-require './common/reflect.coffee'
 
 WorldBuilder = require './world/builder.coffee'
 Player = require './player.coffee'
@@ -18,11 +17,8 @@ module.exports = class Game
         @buildTownTradeDecks()
         @players = for playerNo in [1..@playerCount] then new Player(@world.towns[0].pos)
         @turnCount = 1
-        @_state = new MoveTurn @players[0], @
-        @_state.whenDone.then => @processStateTransition()
-
-    @get 'state', ->
-        @_state
+        @state = new MoveTurn @players[0], @
+        @state.whenDone.then => @processStateTransition()
 
     buildEncounterDecks: ->
         @encounterDecks = {}
@@ -50,5 +46,5 @@ module.exports = class Game
             @players[0]
 
     processStateTransition: ->
-        @_state = @_state.getNextState()
-        @_state.whenDone.then => @processStateTransition()
+        @state = @state.getNextState()
+        @state.whenDone.then => @processStateTransition()

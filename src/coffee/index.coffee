@@ -1,3 +1,6 @@
-Game = require './game.coffee'
-WorldBuilder = require './world/builder.coffee'
-game = new Game (new WorldBuilder), null, 1
+ReactDOM = require 'react-dom'
+React = require 'react'
+GameComponent = require './ui/game.coffee'
+
+document.addEventListener 'DOMContentLoaded', ->
+    ReactDOM.render(<GameComponent/>, document.getElementById('game-root'))
