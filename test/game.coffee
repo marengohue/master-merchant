@@ -25,6 +25,7 @@ TestUtil = require './lib/test-util'
 MathUtil = require '../src/common/math-util'
 
 MoveTurn = require '../src/gamestate/move'
+TradeTurn = require '../src/gamestate/trade'
 
 describe 'Game', ->
     fineBuilder = new WorldBuilder
@@ -154,8 +155,7 @@ describe 'Game', ->
 
         it 'Should give the players and object to perform state-dependend actions', ->
             game = new Game builder, null, 1
-            chai.expect(typeof game.stateActions).to.be.an.instanceof MoveTurn
-            chai.expect(typeof game.stateActions)
+            chai.expect(game.state).to.be.an.instanceof MoveTurn
 
         it 'Should switch states upon completion of turn', ->
             game = new Game builder, null, 2 
@@ -168,7 +168,11 @@ describe 'Game', ->
                 chai.expect(secondState.player).to.equal game.players[1]
                 secondState.moveTo(secondState.getAvailableTilesToMove()[0])
                 secondState.whenDone.then ->
-                    chai.expect(game.state.player).to.equal game.players[0]
+                    # Skipping the trade since no one can trade before turn 3
+                    game.state.whenDone.then ->
+                        # Skipping the worldsim state
+                        game.state.whenDone.then ->
+                            chai.expect(game.state.player).to.equal game.players[0]
 
         it 'Should start the players on the first town in the list', ->
             game = new Game builder, null, 2 
@@ -205,17 +209,18 @@ describe 'Game', ->
             world = new World tiles, towns
             game = new Game world, null, 2
             # Moving to null-tiles is forbidden
-            chai.expect(game.performMove x: 1, y: 0).to.be.rejected
-            chai.expect(game.performMove x: 1, y: 2).to.eventually.be.rejected
+            chai.expect(-> game.state.moveTo x: 1, y: 0).to.throw()
+            chai.expect(-> game.state.moveTo x: 1, y: 2).to.throw()
 
             # Moving to a non-manhattan-adjacent tile is forbidden
-            chai.expect(game.performMove x: 2, y: 0).to.eventually.be.rejected
+            chai.expect(-> game.state.moveTo x: 2, y: 0).to.throw()
 
             # Moving to an adjacent tile is ok
-            chai.expect(game.performMove x: 0, y: 1).to.not.be.rejected
-
-            # First player should have moved by that point
-            chai.expect(MathUtil.equalPoints game.players[0].pos, { x: 0, y: 1 }).to.be.true
+            moveState = game.state
+            chai.expect(-> moveState.moveTo x: 0, y: 1).to.not.throw()
+            moveState.whenDone.then ->
+                # First player should have moved by that point
+                chai.expect(MathUtil.equalPoints game.players[0].pos, { x: 0, y: 1 }).to.be.true
 
         it 'Should draw and play the top encounter when entering the appropariate tile', ->
             builder = new WorldBuilder 
@@ -237,33 +242,37 @@ describe 'Game', ->
                 registry.encounters[PlainLandsCard] = [ dummyEncounterCtor ]
 
             game = new Game builder, registry, 1
-            game.performMove game.getAvailableTilesToMove()[0]
+            game.state.moveTo game.state.getAvailableTilesToMove()[0]
             chai.expect(dummyCalled).to.be.true
             chai.expect(game.encounterDecks[TownLandsCard].stack.length is 0 or game.encounterDecks[PlainLandsCard].stack.length is 0).to.be.true
 
         it 'Should go to TRADE state after all the players have moved and at least one is in the TOWN', ->
             builder = new WorldBuilder
             game = new Game builder, null, 2
-            initialPosition = game.currentPlayer.pos
+            initialPosition = game.state.player.pos
             chai.expect(game.turnCount).to.equal 1
-            game.performMove game.getAvailableTilesToMove()[0]
-                .then ->
-                    game.performMove game.getAvailableTilesToMove()[0]
-                        .then ->
-                            # Expect move state since all of the players are out of the towns
-                            chai.expect(game.state).to.equal GameState.MOVEMENT
+            game.state.moveTo game.state.getAvailableTilesToMove()[0]
+            game.state.whenDone.then ->
+                game.state.moveTo game.state.getAvailableTilesToMove()[0]
+                game.state.whenDone.then ->
+                    # Skipping the trade as no one is on the town tile
+                    game.state.whenDone.then ->
+                        # Skipping the worldsim as no input is required there
+                        game.state.whenDone.then ->
+                            # Expect move state now and turn count to be updated
+                            chai.expect(game.state).to.be.instanceof MoveTurn
                             chai.expect(game.turnCount).to.equal 2
 
-                            game.performMove initialPosition
-                                .then ->
-                                    # Expect move state since not all of the players are done with their movements
-                                    chai.expect(game.state).to.equal GameState.MOVEMENT
-                                    game.performMove initialPosition
-                                        .then ->
-                                            # Finally should be trading since all of the players are done moving
-                                            # and we have players in town
-                                            chai.expect(game.turnCount).to.equal 2
-                                            chai.expect(game.state).to.equal GameState.TRADE
+                            game.state.moveTo initialPosition
+                            game.state.whenDone.then ->
+                                # Expect move state since not all of the players are done with their movements
+                                chai.expect(game.state).to.be.instanceof MoveTurn
+                                game.state.moveTo initialPosition
+                                game.state.whenDone.then ->
+                                    # Finally should be trading since all of the players are done moving
+                                    # and we have players in town
+                                    chai.expect(game.turnCount).to.equal 2
+                                    chai.expect(game.state).to.be.instanceof TradeTurn
 
 describe 'Player', ->
     player = new Player

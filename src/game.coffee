@@ -9,7 +9,7 @@ TownLandsCard = require './cards/lands/town'
 
 MathUtil = require './common/math-util'
 
-MoveState = require './gamestate/move'
+MoveTurn = require './gamestate/move'
 
 module.exports = class Game
     constructor: (worldOrBuilder, @cardRegistry, @playerCount = 1) ->
@@ -19,8 +19,11 @@ module.exports = class Game
         @buildTownTradeDecks()
         @players = for playerNo in [1..@playerCount] then new Player(@world.towns[0].pos)
         @turnCount = 1
-        @state = new MoveState @players[0], @
-        @state.whenDone.then => @processStateTransition()
+        @_state = new MoveTurn @players[0], @
+        @_state.whenDone.then => @processStateTransition()
+
+    @get 'state', ->
+        @_state
 
     buildEncounterDecks: ->
         @encounterDecks = {}
@@ -35,42 +38,18 @@ module.exports = class Game
         @tradeDecks = @world.getTowns().map (town) =>
             new Deck (itemCtors.map (itemCtor) -> new itemCtor)
 
-    tryGoToWorldSimState: ->
-        new Promise (resolve, reject) =>
-            @state = GameState.SIMULATION
-            @finishTurn().then =>
-                resolve()
-
-    tryGoToTradeState: ->
-        new Promise (resolve, reject) =>
-            if @currentPlayer is @players[0]
-                firstPlayerInTradeState = @players.findIndex (p) => @world.getTile(p.pos) instanceof TownLandsCard
-                if firstPlayerInTradeState isnt -1
-                    @currentPlayerNo = firstPlayerInTradeState
-                    @state = GameState.TRADE
-                    resolve()
-                else
-                    @tryGoToWorldSimState().then =>
-                        resolve()
-            else
-                resolve()
-
     finishTurn: ->
-        new Promise (resolve, reject) =>
-            @currentPlayerNo = 0
-            @turnCount += 1
-            @state = GameState.MOVEMENT
-            resolve()
+        @turnCount += 1
+        new MoveTurn @players[0], @
+
+    getNextPlayer: (currentPlayer) ->
+        if currentPlayer?    
+            playerIndex = @players.indexOf currentPlayer
+            throw new Error('This is not a player from the current game') if playerIndex is -1
+            @players[playerIndex + 1] or null
+        else
+            @players[0]
 
     processStateTransition: ->
-        if (@state instanceof MoveTurn)
-            if @state.player is @players[@playerCount - 1]
-                firstPlayerInTradeState = @players.findIndex (p) => @world.getTile(p.pos) instanceof TownLandsCard
-                @state = new TradeTurn @players[firstPlayerInTradeState], @
-            else
-                @currentPlayerNo + 1
-                @state = new TradeMove @playes[@currentPlayerNo]
-
-
-    getState: ->
-        @state
+        @_state = @_state.getNextState()
+        @_state.whenDone.then => @processStateTransition()

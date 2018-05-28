@@ -4,21 +4,21 @@ Turn = require './turn'
 TradeTurn = require './trade'
 
 module.exports = class MoveTurn extends Turn
-    getNextState: ->
-        if @isLastPlayersTurn()
-            @getTradeOrWorldsim()
-        else
-            @getNextPlayerMoveTurn()
+    constructor: (@player, game) ->
+        super game
 
-    isLastPlayersTurn: ->
-        @player is @game.players[@game.playerCount - 1]
+    getNextState: ->
+        nextPlayer = @game.getNextPlayer @player
+        if nextPlayer?
+            @getNextPlayerMoveTurn nextPlayer
+        else
+            @getTradeOrWorldsim()
 
     getTradeOrWorldsim: ->
-        firstPlayerInTradeState = @game.players.findIndex (p) => @game.world.getTile(p.pos) instanceof TownLandsCard
-        new TradeTurn @players[firstPlayerInTradeState], @
+        new TradeTurn null, @game
 
-    getNextPlayerMoveTurn: ->
-        new TradeMove @players[@game.players.findIndex(@player) + 1], @game
+    getNextPlayerMoveTurn: (nextPlayer) ->
+        new MoveTurn nextPlayer, @game
 
     resolveEncounter: ->
         playerTile = @game.world.getTile @player.pos
