@@ -4,10 +4,9 @@
   "description": "The dwarven merchant game",
   "main": "index.js",
   "scripts": {
-    "start": "npm run clean && npm run build && npm run launch",
     "clean": "rm -rf dist",
-    "launch": "node ./dist/index.js",
-    "build": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js",
+    "dev": "npm run clean && node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot --content-base dist --history-api-fallback",
+    "build": "npm run clean && node ./node_modules/webpack/bin/webpack.js --config webpack.config.js",
     "test": "node ./node_modules/mocha/bin/mocha --require coffeescript/register \"test/**/*.coffee\""
   },
   "repository": {
@@ -33,9 +32,11 @@
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.0",
     "mocha": "^5.1.1",
+    "open-browser-webpack-plugin": "0.0.5",
     "style-loader": "^0.21.0",
     "webpack": "^4.9.1",
-    "webpack-cli": "^2.1.4"
+    "webpack-cli": "^2.1.4",
+    "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
     "react": "^16.4.0",

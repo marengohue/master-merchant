@@ -20,8 +20,7 @@ module.exports = {
                 test: /\.coffee$/,
                 use: [ 'jsx-loader', 'coffee-loader' ]
             },
-            {
-                test: /\.less$/,
+            {test: /\.less$/,
                 use: [
                     MiniCssExtractPlugin.loader,
                     'css-loader',
