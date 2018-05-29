@@ -1,16 +1,18 @@
 React = require 'react'
-
 module.exports = class TileCardComponent extends React.Component
     constructor: (props) ->
         super props
         @state = zoomed: false
 
     handleZoom: (e) ->
+        e.preventDefault()
         @setState (prev) ->
             zoomed: !prev.zoomed;
 
-        document.body.classList.toggle 'dimmed'
-        e.preventDefault()
+    zoomCard: (val) ->
+        @setState (prev) ->
+            zoomed: val;
+
 
     render: ->
         style = 

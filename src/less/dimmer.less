@@ -1,22 +1,26 @@
 body {
-    .dimmer {
-        transition: 0.5s background-color;
-        content: " ";
-        display: block;
-        position: fixed;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        background-color: rgba(0, 0, 0, 0);
+
+    .dimmer-wrapper {
+        .dimmer {
+            display: none;
+            transition: 0.5s opacity;
+            content: " ";
+            position: fixed;
+            height: 5000px;
+            width: 5000px;
+            overflow: hidden;
+            background-color: black;
+            opacity: 0;
+
+            &.dimmed {
+                display: block;
+                z-index: 10;
+                opacity: 0.5;
+            }
+        }
     }
 
     &.dimmed {
         overflow: hidden;
-        
-        .dimmer {
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
     }
 }
