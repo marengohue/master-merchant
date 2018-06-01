@@ -14,9 +14,9 @@ module.exports = class LandsCardComponent extends React.Component
             left: @props.card.pos.x * 230 + 'px'
         
         <li className={'lands card'} style={style}>
-            <span className="card-title">{@props.card.constructor.name}</span>
-            <figure className="image" style={@applyCardColor()}>{@props.card.toString()}</figure>
+            <span className="card-title">{@props.card.getTitle()}</span>
+            <figure className="image" style={@applyCardColor()}>{@props.card.getImage()}</figure>
             <p className="text">
-                {@props.card.constructor.name}
+                {@props.card.getText()}
             </p>
         </li>

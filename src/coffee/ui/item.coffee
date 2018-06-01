@@ -10,9 +10,10 @@ module.exports = class ItemCardComponent extends React.Component
 
     render: ->       
         <li className={'stacked-card item'}>
-            <span className="card-title">{@props.item.constructor.name}</span>
-            <figure className="image" style={@applyCardColor()}>{@props.item.toString()}</figure>
+            <span className="card-title">{@props.item.getTitle()}</span>
+            <figure className="image" style={@applyCardColor()}>{@props.item.getImage()}</figure>
+            <span class="card-value">{@props.item.value} ☼</span>
             <p className="text">
-                {@props.item.constructor.name}
+                {@props.item.getText()}
             </p>
         </li>

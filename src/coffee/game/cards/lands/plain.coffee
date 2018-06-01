@@ -4,8 +4,14 @@ module.exports = class PlainLandsCard extends LandsCard
     constructor: (@pos) ->
         super()
         
-    getColor: () ->
+    getColor: ->
         '#87db72'
 
-    toString: () ->
-        '.'
+    getImage: ->
+        '⥭'
+
+    getTitle: ->
+        'Plains'
+        
+    toString: ->
+        '⥭'

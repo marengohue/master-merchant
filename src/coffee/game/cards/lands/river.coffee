@@ -4,8 +4,14 @@ module.exports = class RiverLandsCard extends LandsCard
     constructor: (@pos) ->
         super()
         
-    getColor: () ->
+    getColor: ->
         '#3d49d3'
 
-    toString: () ->
+    getTitle: ->
+        'River'
+
+    getImage: ->
+        '≈'
+
+    toString: ->
         '≈'

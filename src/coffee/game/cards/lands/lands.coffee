@@ -7,5 +7,8 @@ module.exports = class LandsCard extends Card
     getColor: () ->
         null
 
+    getText: ->
+        'Wilderness'
+
     toString: () ->
         'x'

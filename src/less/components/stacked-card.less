@@ -1,4 +1,13 @@
 .stacked-card {
+    transition: 0.3s;
+
+    &:hover {
+        box-shadow: 0px 0px 10px 10px @color_text_card;
+        cursor: pointer;
+        bottom: 10px;
+        z-index: 3;
+    }
+
     list-style: none;
     height: 287px;
     width: 207px;
@@ -9,11 +18,42 @@
     border-right: 3px solid @color_card_border;
     border-left: 1px solid @color_card_border;
     display: inline-block;
-    margin-right: -177px;
+    position: relative;
+    padding: 10px 5px;
+    margin-right: -210px;
+    bottom: 0px;
+
+    
+    figure.image {
+        text-align: center;
+        font-size: 100px;
+        margin: 0;
+        color: @color_text_card;
+    }
+
+    span.card-value {
+        font-weight: bold;
+        display: block;
+        text-align: center;
+    }
+
+    span.card-title {
+        text-align: center;
+        display: block;
+        font-size: 24px;
+    }
+
+    p.text {
+        color: @color_text_desc;
+        font-size: 12px;
+        font-style: italic;
+        text-align: center;
+    }
 }
 
 .card-group {
+    position: relative;
     display: inline-block;
-    margin-right: 200px;
+    margin-right: 100px;
 }
 
