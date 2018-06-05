@@ -3,24 +3,39 @@
     list-style: none;
     height: 287px;
     width: 207px;
+    transition: 0.3s;
 
     &:hover {
         box-shadow: 0px 0px 10px 10px @color_text_card;
         cursor: pointer;
     }
 
-    .card {
+    .card-front, .card-back {
         border-radius: 10px;
         border-bottom: 3px solid @color_card_border;
         border-right: 3px solid @color_card_border;
         border-left: 1px solid @color_card_border;
         background-color: @color_card_primary;
-        transition: 0.3s;
         padding: 10px 5px;
-        color: @color_text_card;
-
         width: calc(100% - 10px);
         height: calc(100% - 20px);
+    }
+
+    .card-back {
+        color: @color_card_border;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .image {
+            font-size: 231px;
+            margin: 0;
+            color: @color_card_border;
+        }
+    }
+
+    .card-front {
+        color: @color_text_card;
 
         figure.image {
             text-align: center;

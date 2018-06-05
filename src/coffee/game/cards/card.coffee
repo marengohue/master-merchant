@@ -15,3 +15,4 @@ module.exports = class Card
 
     constructor: ->
         @uid = uuid()
+        @isFacedown = false

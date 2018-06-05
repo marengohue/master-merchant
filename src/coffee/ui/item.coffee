@@ -12,7 +12,7 @@ module.exports = class ItemCardComponent extends React.Component
         <li className={'stacked-card item'}>
             <span className="card-title">{@props.item.getTitle()}</span>
             <figure className="image" style={@applyCardColor()}>{@props.item.getImage()}</figure>
-            <span class="card-value">{@props.item.value} ☼</span>
+            <span className="card-value">{@props.item.value} ☼</span>
             <p className="text">
                 {@props.item.getText()}
             </p>
