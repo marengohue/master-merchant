@@ -1,4 +1,5 @@
 React = require 'react'
+FlippableComponent = require './flippable.coffee'
 
 module.exports = class LandsCardComponent extends React.Component
     constructor: (props) ->
@@ -13,10 +14,22 @@ module.exports = class LandsCardComponent extends React.Component
             top: @props.card.pos.y * 320 + 'px'
             left: @props.card.pos.x * 230 + 'px'
         
-        <li className={'lands card'} style={style}>
-            <span className="card-title">{@props.card.getTitle()}</span>
-            <figure className="image" style={@applyCardColor()}>{@props.card.getImage()}</figure>
-            <p className="text">
-                {@props.card.getText()}
-            </p>
+        <li className="card-container" style={style}>
+            <FlippableComponent
+                flipped={@props.card.isFacedown}
+                front={
+                    <div className="card lands">
+                        <span className="card-title">{@props.card.getTitle()}</span>
+                        <figure className="image" style={@applyCardColor()}>{@props.card.getImage()}</figure>
+                        <p className="text">
+                            {@props.card.getText()}
+                        </p>
+                    </div>
+                }
+                back={
+                    <div className="card lands">
+                        <figure className="image">☼</figure>
+                    </div>
+                }
+            />
         </li>

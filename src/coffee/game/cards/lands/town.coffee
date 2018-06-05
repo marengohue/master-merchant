@@ -4,6 +4,7 @@ module.exports = class TownLandsCard extends LandsCard
     constructor: (pos) ->
         super pos
         @townTitle = 'Town'
+        @isFacedown = false
     
     getImage: ->
         '⟰'

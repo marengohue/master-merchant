@@ -1,0 +1,26 @@
+.flippable {
+    transition: transform 0.5s;
+    &.flipped .flippable-content {
+        transform: rotateY(180deg) ;
+    }
+
+    .flippable-content {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transition: transform 1s;
+        transform-style: preserve-3d;
+
+        
+        .flippable-front, .flippable-back {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            backface-visibility: hidden;
+        }
+
+        .flippable-back {
+            transform: rotateY(180deg);
+        }
+    }
+}

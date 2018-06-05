@@ -1,40 +1,45 @@
- .card {
-    transition: 0.3s;
+.card-container {
+    position: absolute;
+    list-style: none;
+    height: 287px;
+    width: 207px;
 
     &:hover {
         box-shadow: 0px 0px 10px 10px @color_text_card;
         cursor: pointer;
     }
 
-    position: absolute;
-    list-style: none;
-    height: 287px;
-    width: 207px;
-    background-color: @color_card_primary;
-    color: @color_text_card;
-    border-radius: 10px;
-    border-bottom: 3px solid @color_card_border;
-    border-right: 3px solid @color_card_border;
-    border-left: 1px solid @color_card_border;
-    padding: 10px 5px;
-
-    figure.image {
-        text-align: center;
-        font-size: 100px;
-        margin: 0;
+    .card {
+        border-radius: 10px;
+        border-bottom: 3px solid @color_card_border;
+        border-right: 3px solid @color_card_border;
+        border-left: 1px solid @color_card_border;
+        background-color: @color_card_primary;
+        transition: 0.3s;
+        padding: 10px 5px;
         color: @color_text_card;
-    }
-    
-    span.card-title {
-        text-align: center;
-        display: block;
-        font-size: 24px;
-    }
 
-    p.text {
-        color: @color_text_desc;
-        font-size: 12px;
-        font-style: italic;
-        text-align: center;
+        width: calc(100% - 10px);
+        height: calc(100% - 20px);
+
+        figure.image {
+            text-align: center;
+            font-size: 100px;
+            margin: 0;
+            color: @color_text_card;
+        }
+        
+        span.card-title {
+            text-align: center;
+            display: block;
+            font-size: 24px;
+        }
+
+        p.text {
+            color: @color_text_desc;
+            font-size: 12px;
+            font-style: italic;
+            text-align: center;
+        }
     }
 }
