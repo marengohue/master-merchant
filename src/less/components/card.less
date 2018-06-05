@@ -3,14 +3,16 @@
     list-style: none;
     height: 287px;
     width: 207px;
-    transition: 0.3s;
 
     &:hover {
-        box-shadow: 0px 0px 10px 10px @color_text_card;
-        cursor: pointer;
+        .card-front, .card-back {
+            box-shadow: 0px 0px 10px 10px @color_text_card;
+            cursor: pointer;
+        }
     }
 
     .card-front, .card-back {
+        transition: 0.3s;
         border-radius: 10px;
         border-bottom: 3px solid @color_card_border;
         border-right: 3px solid @color_card_border;
