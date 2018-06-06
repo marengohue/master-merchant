@@ -1,3 +1,4 @@
+EventEmitter = require 'events'
 
 WorldBuilder = require './world/builder.coffee'
 Player = require './player.coffee'
@@ -9,8 +10,10 @@ MathUtil = require './common/math-util.coffee'
 
 MoveTurn = require './gamestate/move.coffee'
 
-module.exports = class Game
+
+module.exports = class Game extends EventEmitter
     constructor: (worldOrBuilder, @cardRegistry, @playerCount = 1) ->
+        super()
         @cardRegistry ?= require './cfg/card-registry.coffee'
         @world = if worldOrBuilder instanceof WorldBuilder then worldOrBuilder.build() else worldOrBuilder
         @buildEncounterDecks()
@@ -47,4 +50,5 @@ module.exports = class Game
 
     processStateTransition: ->
         @state = @state.getNextState()
+        @emit('stateChange', @state)
         @state.whenDone.then => @processStateTransition()

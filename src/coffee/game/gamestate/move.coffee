@@ -28,6 +28,10 @@ module.exports = class MoveTurn extends Turn
     isValidMovement: (toWhere) ->
         MathUtil.areAdjacent(@player.pos, toWhere) and @game.world.getTile(toWhere)?
 
+    revealLands: (where) ->
+        playerTile = @game.world.getTile @player.pos
+        playerTile.flip true
+
     getAvailableTilesToMove: ->
         MathUtil
             .getNeighbours @player.pos
@@ -36,6 +40,7 @@ module.exports = class MoveTurn extends Turn
     moveTo: (toWhere) ->
         if @isValidMovement toWhere
             @player.pos = toWhere
+            @revealLands()
             @resolveEncounter().then =>
                 @endTurn()
         else

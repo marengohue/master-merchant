@@ -1,19 +1,16 @@
 React = require 'react'
+CardComponent = require './card.coffee'
 
-module.exports = class ItemCardComponent extends React.Component
-    constructor: (props) ->
-        super props
+module.exports = class ItemCardComponent extends CardComponent
+    getGlobalClasses: ->
+        super.getGlobalClasses().concat 'stacked'
 
-    applyCardColor: (styleObj) ->
-        color = @props.item.getColor()
-        Object.assign (if color? then { color } else { }), styleObj
-
-    render: ->       
-        <li className={'stacked-card item'}>
-            <span className="card-title">{@props.item.getTitle()}</span>
-            <figure className="image" style={@applyCardColor()}>{@props.item.getImage()}</figure>
-            <span className="card-value">{@props.item.value} ☼</span>
+    getCardFront: ->       
+        <div className="card-front item">
+            <span className="card-title">{@props.card.getTitle()}</span>
+            <figure className="image" style={@applyCardColor()}>{@props.card.getImage()}</figure>
+            <span className="card-value">{@props.card.value} ☼</span>
             <p className="text">
-                {@props.item.getText()}
+                {@props.card.getText()}
             </p>
-        </li>
+        </div>

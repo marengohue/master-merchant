@@ -1,36 +1,54 @@
 React = require 'react'
 FlippableComponent = require './flippable.coffee'
 
-module.exports = class TileCardComponent extends React.Component
+module.exports = class CardComponent extends React.Component
     constructor: (props) ->
         super props
+        @state =
+            flipped: @props.card.isFacedown
+
+    handleCardFlip: (isFlipped) ->
+        @setState (old) ->
+            flipped: isFlipped
+
+    componentDidMount: ->
+        @boundFlipHandler = @handleCardFlip.bind @
+        @props.card.on 'flipped', @boundFlipHandler
+
+    componentWillUnmount: ->
+        @props.card.off 'flipped', @boundFlipHandler
+
+    handleCardClick: ->
+        if @props.cardClickedHandler?
+            @props.cardClickedHandler @
 
     applyCardColor: (styleObj) ->
         color = @props.card.getColor()
         Object.assign (if color? then { color } else { }), styleObj
-    
-    getCardClassName: ->
-        ''
+
+    getPositionalStyle: -> 
+        {}
+
+    getGlobalClasses: ->
+        classes = [ 'card-container' ]
+        if @props.highlighted
+            classes.push 'highlighted'
+        return classes
+
+    getCardFront: ->
+        <div className="card-front generic">This is a generic card front</div>
 
     render: ->
-        style =         
-            top: @props.card.pos.y * 320 + 'px'
-            left: @props.card.pos.x * 230 + 'px'
-        
-        <li className={@getCardClassName() + ' card'} style={style}>
+        <li className={((@getGlobalClasses() or []).join ' ')} style={@getPositionalStyle()} onClick={@handleCardClick.bind @}>
             <FlippableComponent
-                flipped=false
+                flipped={@state.flipped}
                 front={
-                    <div>
-                        <span className="card-title">{@props.card.constructor.name}</span>
-                        <figure className="image" style={@applyCardColor()}>{@props.card.toString()}</figure>
-                        <p className="text">
-                            {@props.card.constructor.name}
-                        </p>
-                    </div>
+                    @getCardFront()
                 }
                 back={
-                    <p>☼</p>
+                    <div className="card-back">
+                        <figure className="image">☼</figure>
+                    </div>
                 }
             />
         </li>

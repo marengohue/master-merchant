@@ -1,12 +1,38 @@
 .card-container {
-    position: absolute;
+    &.absolute {
+        position: absolute;
+    }
+
+    &.stacked {
+        transition: 0.3s;
+        position: relative;
+        display: inline-block;
+        margin-left: -200px;
+
+        &:hover {
+            bottom: 10px;
+            z-index: 3;
+        }
+    }
+
     list-style: none;
     height: 287px;
     width: 207px;
 
     &:hover {
+        &:not(.highlighted) {
+            .card-front, .card-back {
+                box-shadow: 0px 0px 10px 10px @color_text_card;
+            }   
+        }
         .card-front, .card-back {
-            box-shadow: 0px 0px 10px 10px @color_text_card;
+            cursor: pointer;
+        }
+    }
+
+    &.highlighted {
+        .card-front, .card-back {
+            box-shadow: 0px 0px 10px 10px green;
             cursor: pointer;
         }
     }
@@ -57,6 +83,14 @@
             font-size: 12px;
             font-style: italic;
             text-align: center;
+        }
+
+        &.item {
+            span.card-value {
+                font-weight: bold;
+                display: block;
+                text-align: center;
+            }
         }
     }
 }

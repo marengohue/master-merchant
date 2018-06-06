@@ -4,7 +4,8 @@ ItemBasicDrink = require './cards/items/drink/basic-drink.coffee'
 ItemBasicFood = require './cards/items/food/basic-food.coffee'
 
 module.exports = class Player
-    constructor: (@pos) ->
+    constructor: (@pos, @name) ->
+        @name ?= 'marengo'
         @wagon = new Deck
         @playerCharacter = new Character
         @party = [ @playerCharacter ]
