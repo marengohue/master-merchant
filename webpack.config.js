@@ -20,14 +20,30 @@ module.exports = {
                 test: /\.coffee$/,
                 use: [ 'jsx-loader', 'coffee-loader' ]
             },
-            {test: /\.less$/,
+            {
+                test: /\.less$/,
                 use: [
                     MiniCssExtractPlugin.loader,
                     'css-loader',
                     { loader: 'less-loader', options: { sourceMap: true } }
                 ]
             },
-            { test: /\.html$/, use: 'html-loader' }
+            {
+                test: /\.(gif|png|jpe?g|svg)$/i,
+                use: [
+                    'file-loader',
+                    {
+                        loader: 'image-webpack-loader',
+                        options: {
+                            disable: true
+                        },
+                    },
+                ],
+            },
+            { 
+                test: /\.html$/,
+                use: 'html-loader'
+            }
         ]
     },
     plugins: [

@@ -12,7 +12,7 @@ module.exports = class InfoComponent extends React.Component
             </div>
 
     render: ->
-        <header>
+        <header className="main-header">
             <a href="index.html">
                 <h1>☼ Master Merchant ☼</h1>
             </a>

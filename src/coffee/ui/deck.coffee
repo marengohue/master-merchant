@@ -13,13 +13,15 @@ module.exports = class ItemDeckComponent extends React.Component
         valueGroups = _.values groupings
 
         <div className="deck">
-            {
-                valueGroups.map (group, groupIndex) ->
-                    <div className="card-group" key={groupIndex}>
+            <div className="deck-flexer" />
+                {
+                    valueGroups.map (group, groupIndex) ->
+                        <div className="card-group" key={groupIndex}>
                         {
                             group.map (card, index) ->
                                 <ItemCardComponent key={card.uid} card={card} />
                         }
-                    </div>
-            }
+                        </div>
+                }
+            <div className="deck-flexer" />
         </div>

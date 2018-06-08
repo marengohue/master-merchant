@@ -1,7 +1,22 @@
 .deck {
-    margin-left: 200px;
+    position: fixed;
+    bottom: -150px;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    background-color: @color_wagon_bg;
+    background: url('../../img/planks.jpg');
+
+    .deck-flexer {
+        flex-grow: 1;
+    }
 
     .card-group {
+        flex-grow: 0;
+        &:first-child {
+            margin-left: 200px;
+        }
+
         position: relative;
         display: inline-block;
         margin-right: 100px;

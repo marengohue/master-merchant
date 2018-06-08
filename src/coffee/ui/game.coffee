@@ -32,8 +32,10 @@ module.exports = class GameComponent extends React.Component
 
     cardClickedHandler: (cardComponent) ->
         if @props.game.state instanceof TurnMovement
-            @props.game.state.moveTo cardComponent.props.card.pos
-
+            try
+                @props.game.state.moveTo cardComponent.props.card.pos
+            catch _
+            
     render: ->
         <main className="game" onContextMenu={@onRightClick}>
             <InfoComponent game={@props.game}/>

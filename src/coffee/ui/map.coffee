@@ -6,7 +6,7 @@ LandsCardComponent = require './lands.coffee'
 module.exports = class WorldMapComponent extends React.Component
     render: ->
         style = 
-            height: @props.world.getSize().y * 117 + 'px'
+            height: @props.world.getSize().y * 117 + 300 + 'px'
         
         <ul className="world-map" style={style}>
             {
