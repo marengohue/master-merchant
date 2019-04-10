@@ -39,6 +39,9 @@ It is done is the following manner:
 - A player reveals the town's TRADE deck
 - Player CAN DO one round of BARTER based on the value of the items (listed on the items).
 
+
+When revealing the trade deck, certain goods will have quality and material icons on them. When this is the case a revealing player has to also draw the listed tokens and apply it to the card. Quality and material tokens are modifiers to the item's cost and characteristics. This rule applies to any item draw scenario except when quality or material is stated in any other manner.
+
 There are several rules to the trade:
 - Local goods (Except for basic FOODS and DRINKS) are cheaper 20% cheaper when bought and sold locally (rounding down, but not cheaper that ☼1).
 - Players can buy basic FOOD and DRINK items (Plump helmets and Dwarven Ale) unless the the town modifiers state otherwise.
